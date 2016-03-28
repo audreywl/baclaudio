@@ -1,0 +1,1 @@
+"""This is the development file for creating the visulization. It uses pygame to make a visual representation using 2 values - BPM and 'mood'(key). It also displys the current sentiment of lyrics, and the pyrics themselves. It calls the functions in audio.py and lyrics.py by providing the current time stamp."""

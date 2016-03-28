@@ -1,0 +1,1 @@
+"""This is the development file for the lyrics processing. It finds the lyrics using a web API. It processes them chunk by chunk using the sentiment API. When called by the visualization, it provides chunk data including where each line of lyrics starts, the sentiment of each line in comparison to the previous ones, and the text itself."""
