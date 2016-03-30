@@ -6,19 +6,19 @@ We would like our program to be at least partially real-time: we don’t want to
 ![Image of UML](https://raw.githubusercontent.com/audreywl/baclaudio/master/UML1.jpg)
 ##Agenda and Key Questions
 **Intro (5 min) :** 
--Who are we and what are we working on
--Brief explanation of our computer architecture  
+* Who are we and what are we working on
+* Brief explanation of our computer architecture  
 **Discussion Time! (~20min) :**
 We have two main questions that we would like to use to lead this discussion.
--Computer Architecture:
-  -Is there anything that we have discussed that confuses you?
-  -What do you consider as the good/bad parts?
-  -How would you make it better?
--Syncing Text and Audio:
-  -Currently we are using LRC files (Line up time steps with stanzas of lyrics) 
-  -Do you have suggestions of other files or methods we could use?
-  -We are trying to focus on ease of use and versatility.
--Other questions:
-  -Just in case we get through the above topics really quickly we have some more questions for you! 
-  -Sound sentiment 2X2 (figure in presentation)
-  -Music sentiment knowledge/tips
+* Computer Architecture:
+  * Is there anything that we have discussed that confuses you?
+  * What do you consider as the good/bad parts?
+  * How would you make it better?
+* Syncing Text and Audio:
+  * Currently we are using LRC files (Line up time steps with stanzas of lyrics) 
+  * Do you have suggestions of other files or methods we could use?
+  * We are trying to focus on ease of use and versatility.
+* Other questions:
+  * Just in case we get through the above topics really quickly we have some more questions for you! 
+  * Sound sentiment 2X2 (figure in presentation)
+  * Music sentiment knowledge/tips
