@@ -8,7 +8,6 @@ We would like our program to be at least partially real-time: we don’t want to
 **Intro (5 min) :** 
 * Who are we and what are we working on
 * Brief explanation of our computer architecture
-  
 **Discussion Time! (~20min) :**
 We have two main questions that we would like to use to lead this discussion.
 * Computer Architecture:
