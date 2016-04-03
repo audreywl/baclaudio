@@ -2,27 +2,27 @@
 ####Becca Patterson, Audrey Lewis, Cecilia Diehl, Liz Sundsmo
 ##Key Questions Feedback:
 
-**1. Feedback and decisions:**
-  _A. Computer Architecture:_
-    _* Is there anything that we have discussed that confuses you?_
-    _* What do you consider as the good/bad parts?_
-    _* How would you make it better?_
+**1. Feedback and decisions:**      
+  _* Computer Architecture:
+    * Is there anything that we have discussed that confuses you?
+    * What do you consider as the good/bad parts?
+    * How would you make it better?_
 
     There was little confusion of our basic code architecture and nothing was identified by our peers as a particularly bad coding design move. It was suggested by Paul that we include more attributes in Song so that we have channels to track audio analysis, lyric analysis, tempo, etc. This would allow us to update the visualization portion more succinctly and clearly because we could pull an analyzed potion out of Song rather than pulling a piece of the audio out and then needing to do further analysis to tempo. 
 
 
-  _B. Syncing Text and Audio:_
-    _* Currently we are using LRC files (Line up time steps with stanzas of lyrics)_ 
-    _* Do you have suggestions of other files or methods we could use?_
-    _* We are trying to focus on ease of use and versatility._
+  _* Syncing Text and Audio:
+    * Currently we are using LRC files (Line up time steps with stanzas of lyrics) 
+    * Do you have suggestions of other files or methods we could use?
+    * We are trying to focus on ease of use and versatility._
 
     Our audience generally were as lost about this as we are - turns out it’s a really hard problem to solve. Suggestions included using analysis to find instrumental breaks and splitting the lyrics evenly among the rest, linking syllables with beats, and generating our own LRC files ahead of time. Paul expressed that we should just use LRC files and “hack it together” in the first iteration of our code, and then try to figure out better syncing later.
 
 
-  _C. Other questions:_
-    _* Just incase we get through the above topics really quickly we have some more questions for you!_ 
-    _* Sound sentiment 2X2 (figure in presentation)_
-    _* Music sentiment knowledge/tips_
+  _* Other questions:
+    * Just in case we get through the above topics really quickly we have some more questions for you! 
+    * Sound sentiment 2X2 (figure in presentation)
+    * Music sentiment knowledge/tips_
 
     Most people agreed that the way we broke down the sentiments into four quadrants would work, but it was noted that we would be leaving out a wide range of emotions by simplifying it so much.  Some thought that we shouldn’t even label the emotions at all. Claire advised us to consider time signatures because time signatures and their implementation make a big difference to the sound and mood of a piece.  She also questioned how we plan to determine the key of a song, because we could run into some problems by going note by note because you could find chords that fit into multiple keys.  People were also curious about how we could validate our findings, and recommended taking a survey to check for people’s emotions while listening to a song and seeing if our findings match.
 
