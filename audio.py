@@ -4,6 +4,7 @@ import numpy
 import pygame.mixer
 import librosa
 import matplotlib
+import datetime
 
 class Channel(object):
 	"""This is the class that controls the format for visualizer inputs"""
@@ -12,9 +13,8 @@ class Channel(object):
 		self.channel_type=channel_type
 		self.events={}
 		if time_start==None:
-			blank_time=(0,0,0,0,0,0,0,0,0)
-			time_start=time.struct_time(blank_time)
-		elif type(time_start)!=time.struct_time:
+			time_start=datetime.timedelta()
+		elif type(time_start)!=datetime.timedelta:
 			raise TypeError('Must start with a time object')
 		self.events[time_start]=first_value
 		self.previous_value=first_value
@@ -22,32 +22,37 @@ class Channel(object):
 		return self.channel_type
 	def update(self, time, new_value):
 		self.events[time]=new_value
-		previous_value=new_value
+		if type(time)!=datetime.timedelta:
+			raise TypeError('Time argument must be a timedelta object')
+		previous_value=new_value		
 
-#Beat tracking example from librosa
-# 1. Get the file path to the included audio example
-#filename = librosa.util.example_audio_file()
+class Song(object):
+	"""Stores song metadata and analysis functions"""
+	def __init__(self, filename, name='Untitled Song'):
+		self.filename=filename
+		self.name=name
+		self.waveform, self.sample_rate = librosa.load(self.filename)
 
-# 2. Load the audio as a waveform `y`
-#    Store the sampling rate as `sr`
-y, sr = librosa.load('Bad_Reputation.mp3')
+	def __str__(self):
+		return self.name
+	def beat_analysis(self):
+		"""doesn't store anything in non-beat time for now"""
+		self.tempo, self.beat_frames = librosa.beat.beat_track(self.waveform,self.sample_rate)
+		self.beat_times = librosa.frames_to_time(self.beat_frames, self.sample_rate)
+		self.beat_channel=Channel('Beat',False)
+		for second in self.beat_times:
+			time=datetime.timedelta(0,second)
+			print time.microseconds
+			self.beat_channel.update(time, True)
 
-# 3. Run the default beat tracker
-tempo, beat_frames = librosa.beat.beat_track(y,sr)
+bad_rep=Song('Bad_Reputation.mp3','Bad Reputation')
 
-print 'Estimated tempo: {:.2f} beats per minute'.format(tempo)
-
-# 4. Convert the frame indices of beat events into timestamps
-beat_times = librosa.frames_to_time(beat_frames, sr)
-
-print beat_times
-#print 'Saving output to beat_times.csv'
-#librosa.output.times_csv('beat_times.csv', beat_times)
+bad_rep.beat_analysis()
 
 
-bloop_channel=Channel('bloops',3)
-print bloop_channel
-print bloop_channel.events
+# bloop_channel=Channel('bloops',3)
+# print bloop_channel
+# print bloop_channel.events
 
 # pygame.init()
 # pygame.display.set_mode((200,100))
