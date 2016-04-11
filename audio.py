@@ -5,6 +5,7 @@ import pygame.mixer
 import librosa
 import matplotlib
 import datetime
+from pygame import QUIT
 
 class Channel(object):
 	"""This is the class that controls the format for visualizer inputs"""
@@ -41,26 +42,34 @@ class Song(object):
 		self.beat_times = librosa.frames_to_time(self.beat_frames, self.sample_rate)
 		self.beat_channel=Channel('Beat',False)
 		for second in self.beat_times:
+			#rounds time to 1/10 of a second
+			second = round(second, 1)
 			time=datetime.timedelta(0,second)
-			print time.microseconds
+			#saves beat in channel
 			self.beat_channel.update(time, True)
 
+#loads the song and runs analysis
 bad_rep=Song('Bad_Reputation.mp3','Bad Reputation')
-
 bad_rep.beat_analysis()
-
-
-# bloop_channel=Channel('bloops',3)
-# print bloop_channel
-# print bloop_channel.events
-
-# pygame.init()
-# pygame.display.set_mode((200,100))
-# pygame.mixer.music.load('Bad_Reputation.mp3')
-# pygame.mixer.music.play(0)
-# pygame.mixer.music.set_volume(0.5)
-# clock = pygame.time.Clock()
-# clock.tick(10)
-# while pygame.mixer.music.get_busy():
-# 	pygame.event.poll()
-# 	clock.tick(10)
+#starts pygame
+pygame.init()
+pygame.display.set_mode((200,100))
+pygame.mixer.music.load('Bad_Reputation.mp3')
+#starts playing music and starts the clock
+pygame.mixer.music.play(0)
+start=datetime.datetime.now()
+pygame.mixer.music.set_volume(0.5)
+clock = pygame.time.Clock()
+clock.tick(10)
+while pygame.mixer.music.get_busy():
+	for event in pygame.event.get():
+		if event.type == QUIT:
+			pygame.quit()
+	#figures out how long it's been since the song started and rounds
+	time_difference=datetime.datetime.now()-start
+	rounded_time=round(time_difference.total_seconds(),1)
+	time_difference=datetime.timedelta(0,rounded_time)
+	#checks if the current time is a beat
+	if time_difference in bad_rep.beat_channel.events:
+		print 'beat'
+	clock.tick(10)
