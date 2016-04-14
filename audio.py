@@ -37,7 +37,7 @@ class Song(object):
 	def __str__(self):
 		return self.name
 	def beat_analysis(self):
-		"""doesn't store anything in non-beat time for now"""
+		"""runs the analysis on the song to determine where the beats are, and adds a beat channel"""
 		self.tempo, self.beat_frames = librosa.beat.beat_track(self.waveform,self.sample_rate)
 		self.beat_times = librosa.frames_to_time(self.beat_frames, self.sample_rate)
 		self.beat_channel=Channel('Beat',False)
