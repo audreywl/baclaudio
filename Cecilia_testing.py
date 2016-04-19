@@ -45,9 +45,13 @@ class Song(object):
         for second in self.beat_times:
             #rounds time to 1/10 of a second
             second = round(second, 1)
+            next_second = second + .1
             time=datetime.timedelta(0,second)
+            next_time= datetime.timedelta(0, next_second)
             #saves beat in channel
             self.beat_channel.update(time, True)
+            self.beat_channel.update(next_time, False)
+
 
 #set up the visualizer view
 class View(object):
@@ -76,19 +80,14 @@ class View(object):
         time_difference=datetime.timedelta(0,rounded_time)
         #checks if the current time is a beat- if yes, radius expands
         if time_difference in self.bad_rep.beat_channel.events:
-            self.model.update_expand()
-            self.current_time = time_difference
-            print "grow"
-            return 
-        #if no- radius contracts (is a constant value for now)
-        try:
-            time_difference == self.current_time + datetime.timedelta(0,.1)
-            self.model.update_contract()
-            # print self.current_time + datetime.timedelta(0,.1)
-            # print time_difference
-            print "shrink"
-        except AttributeError:
-            pass
+            if self.bad_rep.beat_channel.events[time_difference]:
+                self.model.update_expand()
+                print "grow" 
+            elif self.bad_rep.beat_channel.events[time_difference] == False:
+                self.model.update_contract()
+                print "smaller"
+
+
 
      #    if time_difference in self.bad_rep.lyric_sentiment_channel.event:
         #   current_sentiment = self.bad_rep.lyric_sentiment_channel.event
@@ -129,11 +128,6 @@ class View(object):
 
         #refreshes the screen
         pygame.display.update()
-
-# TESTING PERCENTAGES
-percent_neg= .4680813075696454
-percent_pos= .5319186924303546
-percent_nuetral= .6966947145305018
 
 #create the visualizer model
 class Model(object):
