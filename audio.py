@@ -38,10 +38,10 @@ class Song(object):
         self.filename=filename
         self.name=name
         self.waveform, self.sample_rate = librosa.load(self.filename)
-        self.line_time = self.lyrics.events.keys()
 
     def __str__(self):
         return self.name
+
     def beat_analysis(self):
         """runs the analysis on the song to determine where the beats are, and adds a beat channel"""
         self.tempo, self.beat_frames = librosa.beat.beat_track(self.waveform,self.sample_rate)
@@ -54,19 +54,18 @@ class Song(object):
             #saves beat in channel
             self.beat_channel.update(time, True)
 
-    def lyric_lines(song, times):
+    def lyric_lines(self, song, times):
         """Takes the list created from the .txt song file and puts into Channel.
             NEEDS UPDATE: currently list OP, be smarter about breakdown to increase processing speed!"""
-
         if '[0' in song[0] and ']' in song[0]:
             times.append(song[0])
-            lyric_lines(song[1:], times)
+            self.lyric_lines(song[1:], times)
         else:
             line = ""
             for i in range(len(song)): #i is the index number of the current word/timestamp
                 try:
                     if '[' in song[i]:
-                        lyric_lines(song[i+1:], [song[i]])
+                        self.lyric_lines(song[i+1:], [song[i]])
                         break
                 except IndexError():
                     break
@@ -77,7 +76,7 @@ class Song(object):
                 minutes = float(time[1:3]) #non inclusive of last index
                 seconds = float(time[4:9])
                 line_time = datetime.timedelta(00,seconds, 00, 00, 00, minutes)
-                lyrics.update(line_time,line)
+                self.lyrics.update(line_time,line)
 
     def lyric_sentiment(self):
         """Use time to identify a stanza and send the whole stanza to the NLTK sentiment API.
@@ -101,23 +100,33 @@ class Song(object):
         The value of the probability key is another dictionary with the keys (pos, neg, neutral)"""
 
         # Create lyrics channel
-        lyrics = Channel("Lyrics", "start lyrics:")
+        self.lyrics = Channel("Lyrics", "start lyrics:")
         # Create readable file of lyrics (.LRC file saved as .txt)
         f= open("bad_reputation.txt", 'r')
         song= f.read()
         f.close
-        # List of time stamp and lyric elements
-        song = song.replace(']', '] ')
-        song = song.split()
 
+        # revise text formating to use a single .split() to get timestamp and line breakdown
+        # will use % as split key
+        song = song.replace(']', ']%')
+        song = song.replace('\n', '')
+        song = song.replace('\r', '%')
+        # List of time stamp and lyric elements
+        song = song.split('%')
+
+        #Identify the first time element and start of song
+        #this formatting is needed for self.lyric_lines function
         for i in range(len(song)):
             if '[0' in song[i] and ']' in song[i]:
-                time_start = list(song[i])
+                #the first time stamp of the first line; list type
+                time_start = [song[i]]
+                #the indexes after (post) the time_start index
                 post_start_song = song[i+1:]
                 break
 
+        print song, time_start
         #call lyric_line function (recursive) to obtain needed output format of song text
-        lyric_lines(song, time_start)
+        self.lyric_lines(song, time_start)
 
         #create new attribute in Song to hold onto timestamp Keys
         self.line_time = self.lyrics.events.keys()
@@ -128,7 +137,7 @@ class Song(object):
         
         #populate lyrics_sentiment Channel with respect to line_time
         for a_time in self.line_time:
-            sentiment = urllib2.urlopen(url, "text={}".format(lyrics.events[a_time]))
+            sentiment = urllib2.urlopen(url, "text={}".format(self.lyrics.events[a_time]))
 
             response_text = sentiment.read()
             response_data = json.loads(response_text)
@@ -142,7 +151,7 @@ class Song(object):
             # pprint(probability_values)
 
             # create a sentiment entry for the given time (time corresponds to line)
-            lyrics_sentiment.update(a_time, probability_values)
+            self.lyrics_sentiment.update(a_time, probability_values)
 
 
 #loads the song and runs analysis
