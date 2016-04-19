@@ -43,7 +43,9 @@ song = song.replace(']', '] ')
 song = song.split()
 
 def lyric_lines(song, times):
-    """Takes the list created from the .txt song file and """
+    """Takes the list created from the .txt song file and puts into Channel.
+        NEEDS UPDATE: currently list OP, be smarter about breakdown to increase processing speed!
+    """
     if '[0' in song[0] and ']' in song[0]:
         times.append(song[0])
         lyric_lines(song[1:], times)
@@ -65,7 +67,6 @@ def lyric_lines(song, times):
             line_time = datetime.timedelta(00,seconds, 00, 00, 00, minutes)
             lyrics.update(line_time,line)
                 
-
 for i in range(len(song)):
     if '[0' in song[i] and ']' in song[i]:
         time_start = list(song[i])
@@ -73,6 +74,7 @@ for i in range(len(song)):
         break
 
 lyric_lines(post_start_song, time_start)
+
 
 # pprint(lyrics.events)
 
@@ -100,4 +102,17 @@ sentiment = urllib2.urlopen(url, "text={}".format(lyrics.events[datetime.timedel
 
 response_text = sentiment.read()
 response_data = json.loads(response_text)
-pprint(response_data)
+# pprint(response_data)
+
+""" API returns a dictionary that contains two keys (label, probability). 
+    The value of the probability key is another dictionary with the keys (pos, neg, neutral)
+"""
+# Pull out the probability dictionary
+probability_dict = response_data["probability"]
+# Put the probability values into a list for use in Visualization
+probability_values = [probability_dict["pos"], probability_dict["neg"], probability_dict["neutral"]]
+
+# Check output
+pprint(probability_values)
+
+"""how to make values useable-- return? channel?--> lyric_analysis function that creates channel in the Song class"""
