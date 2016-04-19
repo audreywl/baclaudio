@@ -77,9 +77,27 @@ class View(object):
         #checks if the current time is a beat- if yes, radius expands
         if time_difference in self.bad_rep.beat_channel.events:
             self.model.update_expand()
+            self.current_time = time_difference
+            print "grow"
+            return 
         #if no- radius contracts (is a constant value for now)
-        else:
+        try:
+            time_difference == self.current_time + datetime.timedelta(0,.1)
             self.model.update_contract()
+            # print self.current_time + datetime.timedelta(0,.1)
+            # print time_difference
+            print "shrink"
+        except AttributeError:
+            pass
+
+     #    if time_difference in self.bad_rep.lyric_sentiment_channel.event:
+        #   current_sentiment = self.bad_rep.lyric_sentiment_channel.event
+     #      positive= current_sentiment[0]
+     #      negative= current_sentiment[1]
+     #      neutral= current_sentiment[2]
+     #      self.model.update_color(positive, negative, neutral)
+        # else:
+        #   print "no color change"
 
         self.clock.tick(10)
 
@@ -112,9 +130,15 @@ class View(object):
         #refreshes the screen
         pygame.display.update()
 
+# TESTING PERCENTAGES
+percent_neg= .4680813075696454
+percent_pos= .5319186924303546
+percent_nuetral= .6966947145305018
+
 #create the visualizer model
 class Model(object):
     """stores the current state for the current time in player music"""
+
     def __init__(self, width, height):
         """arranges the elements on the screen"""
         #set up screen (values in if __name__= 'main')
@@ -124,23 +148,29 @@ class Model(object):
         self.r_square= 100
         self.r_rhombus= 100
         self.r_octogon= 100
+        self.beat_expansion= 50
+        self.color= (75, 1, 130)
+
+    # def update_color(self,pos,neg,neutral):
+    #   """updates the rgb values based off of the lyric sentiment"""
+    #   self.color= (75*pos, 1*neg, 130*nuetral)
 
     def update_expand(self):
         """updates model state"""
         #initializing shape radii
         #need to set an expansion variable for easier flexibility, use current+=expansion
-        self.r_cirle= 100 +100
-        self.r_square= 100 +10
-        self.r_rhombus= 100 +10
-        self.r_octogon= 100 +10
+        self.r_cirle+= self.beat_expansion
+        self.r_square+= self.beat_expansion
+        self.r_rhombus+= self.beat_expansion
+        self.r_octogon+= self.beat_expansion
 
     def update_contract(self):
         #resets radii
         #need to use an expansion variable to return to previous radii size
-        self.r_cirle= 100
-        self.r_square= 100
-        self.r_rhombus= 100
-        self.r_octogon= 100
+        self.r_cirle-= self.beat_expansion
+        self.r_square-= self.beat_expansion
+        self.r_rhombus-= self.beat_expansion
+        self.r_octogon-= self.beat_expansion
 
 if __name__=='__main__':
     """When the code is ran, the visualizer sets up as specified"""
