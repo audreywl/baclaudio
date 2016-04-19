@@ -94,7 +94,7 @@ class View(object):
         center_x= self.model.width/2
         center_y= self.model.height/2
         
-        pygame.draw.circle(self.screen, pygame.Color('purple'),
+        pygame.draw.circle(self.screen, pygame.Color('blue'),
             [center_x,center_y], self.model.r_cirle)    
         
         #square, starts bottom left, clockwise
