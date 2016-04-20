@@ -137,21 +137,25 @@ class Song(object):
         
         #populate lyrics_sentiment Channel with respect to line_time
         for a_time in self.line_time:
-            sentiment = urllib2.urlopen(url, "text={}".format(self.lyrics.events[a_time]))
+            # print "timestamp={} text={}".format(a_time, self.lyrics.events[a_time])
 
-            response_text = sentiment.read()
-            response_data = json.loads(response_text)
-            # pprint(response_data)
+            try:
+                sentiment = urllib2.urlopen(url, "text={}".format(self.lyrics.events[a_time]))
+                response_text = sentiment.read()
+                response_data = json.loads(response_text)
+                # pprint(response_data)
 
-            # Pull out the probability dictionary
-            probability_dict = response_data["probability"]
-         
-            # Put the probability values into a list for use in Visualization
-            probability_values = [probability_dict["pos"], probability_dict["neg"], probability_dict["neutral"]]
-            # pprint(probability_values)
+                # Pull out the probability dictionary
+                probability_dict = response_data["probability"]
+             
+                # Put the probability values into a list for use in Visualization
+                probability_values = [probability_dict["pos"], probability_dict["neg"], probability_dict["neutral"]]
+                # pprint(probability_values)
 
-            # create a sentiment entry for the given time (time corresponds to line)
-            self.lyrics_sentiment.update(a_time, probability_values)
+                # create a sentiment entry for the given time (time corresponds to line)
+                self.lyrics_sentiment.update(a_time, probability_values)
+            except urllib2.HTTPError:
+                print "error!"
 
 
 #loads the song and runs analysis
@@ -159,27 +163,27 @@ bad_rep=Song('Bad_Reputation.mp3','Bad Reputation')
 bad_rep.beat_analysis()
 
 bad_rep.lyric_sentiment()
-print bad_rep.lyrics_sentiment
+# pprint(bad_rep.lyrics_sentiment.events)
 
-# #starts pygame
-# pygame.init()
-# pygame.display.set_mode((200,100))
-# pygame.mixer.music.load('Bad_Reputation.mp3')
-# #starts playing music and starts the clock
-# pygame.mixer.music.play(0)
-# start=datetime.datetime.now()
-# pygame.mixer.music.set_volume(0.5)
-# clock = pygame.time.Clock()
-# clock.tick(10)
-# while pygame.mixer.music.get_busy():
-#     for event in pygame.event.get():
-#         if event.type == QUIT:
-#             pygame.quit()
-#     #figures out how long it's been since the song started and rounds
-#     time_difference=datetime.datetime.now()-start
-#     rounded_time=round(time_difference.total_seconds(),1)
-#     time_difference=datetime.timedelta(0,rounded_time)
-#     #checks if the current time is a beat
-#     if time_difference in bad_rep.beat_channel.events:
-#         print 'beat'
-#     clock.tick(10)
+#starts pygame
+pygame.init()
+pygame.display.set_mode((200,100))
+pygame.mixer.music.load('Bad_Reputation.mp3')
+#starts playing music and starts the clock
+pygame.mixer.music.play(0)
+start=datetime.datetime.now()
+pygame.mixer.music.set_volume(0.5)
+clock = pygame.time.Clock()
+clock.tick(10)
+while pygame.mixer.music.get_busy():
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+    #figures out how long it's been since the song started and rounds
+    time_difference=datetime.datetime.now()-start
+    rounded_time=round(time_difference.total_seconds(),1)
+    time_difference=datetime.timedelta(0,rounded_time)
+    #checks if the current time is a beat
+    if time_difference in bad_rep.beat_channel.events:
+        print 'beat'
+    clock.tick(10)
