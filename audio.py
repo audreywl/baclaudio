@@ -38,7 +38,7 @@ class Song(object):
 		self.filename=filename
 		self.name=name
 		self.waveform, self.sample_rate = librosa.load(self.filename)
-		self.line_time = self.lyrics.events.keys()
+		#self.line_time = self.lyrics.events.keys()
 
 	def __str__(self):
 		return self.name
@@ -64,17 +64,18 @@ class Song(object):
 		numpy.delete(self.tonnetz, [0,1,3,5], 1)
 		#after this step, it's just a column vector with 0s for frames with minor and 1 for major
 		major_frames = numpy.argmax(self.tonnetz, 0)
-		self.beat_times = librosa.frames_to_time(self.beat_frames, self.sample_rate)
-		self.chord_channel=Channel('Chords: Major, Minor, Augmented, or Diminished','Major')
-		for second in self.beat_times:
+		frames = [i for i in range(len(major_frames))]
+		self.frame_times = librosa.frames_to_time(frames, self.sample_rate)
+		self.chord_channel=Channel('Chords: Major or Minor','Major')
+		for i in frames:
 			#rounds time to 1/10 of a second
+			second = self.frame_times[i]
 			second = round(second, 1)
-			next_second = second + .1
+			# next_second = second + .1
 			time=datetime.timedelta(0,second)
-			next_time= datetime.timedelta(0, next_second)
 			#saves beat in channel
-			self.beat_channel.update(time, True)
-			self.beat_channel.update(next_time, False)
+			self.chord_channel.update(time, major_frames[i])
+			#self.beat_channel.update(next_time, False)
 
 	def lyric_lines(song, times):
 		"""Takes the list created from the .txt song file and puts into Channel.
@@ -169,30 +170,34 @@ class Song(object):
 
 #loads the song and runs analysis
 bad_rep=Song('Bad_Reputation.mp3','Bad Reputation')
-bad_rep.beat_analysis()
+bad_rep.chord_analysis()
 
-bad_rep.lyric_sentiment()
-print bad_rep.lyrics_sentiment
+#bad_rep.lyric_sentiment()
+#print bad_rep.lyrics_sentiment
 
-# #starts pygame
-# pygame.init()
-# pygame.display.set_mode((200,100))
-# pygame.mixer.music.load('Bad_Reputation.mp3')
-# #starts playing music and starts the clock
-# pygame.mixer.music.play(0)
-# start=datetime.datetime.now()
-# pygame.mixer.music.set_volume(0.5)
-# clock = pygame.time.Clock()
-# clock.tick(10)
-# while pygame.mixer.music.get_busy():
-#     for event in pygame.event.get():
-#         if event.type == QUIT:
-#             pygame.quit()
-#     #figures out how long it's been since the song started and rounds
-#     time_difference=datetime.datetime.now()-start
-#     rounded_time=round(time_difference.total_seconds(),1)
-#     time_difference=datetime.timedelta(0,rounded_time)
-#     #checks if the current time is a beat
-#     if time_difference in bad_rep.beat_channel.events:
-#         print 'beat'
-#     clock.tick(10)
+#starts pygame
+pygame.init()
+pygame.display.set_mode((200,100))
+pygame.mixer.music.load('Bad_Reputation.mp3')
+#starts playing music and starts the clock
+pygame.mixer.music.play(0)
+start=datetime.datetime.now()
+pygame.mixer.music.set_volume(0.5)
+clock = pygame.time.Clock()
+clock.tick(10)
+while pygame.mixer.music.get_busy():
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+    #figures out how long it's been since the song started and rounds
+    time_difference=datetime.datetime.now()-start
+    rounded_time=round(time_difference.total_seconds(),1)
+    time_difference=datetime.timedelta(0,rounded_time)
+    # #checks if the current time is a beat
+    # if time_difference in bad_rep.beat_channel.events:
+    #     print 'beat'
+    if bad_rep.chord_channel.events[time_difference] == 1:
+    	print 'Major'
+    elif bad_rep.chord_channel.events[time_difference] == 0:
+    	print 'Minor'
+    clock.tick(10)
