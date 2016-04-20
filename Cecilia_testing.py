@@ -80,21 +80,19 @@ class View(object):
         time_difference=datetime.timedelta(0,rounded_time)
         #checks if the current time is a beat- if yes, radius expands
         if time_difference in self.bad_rep.beat_channel.events:
-            if self.bad_rep.beat_channel.events[time_difference]:
-                self.model.update_expand()
-                print "grow" 
-            elif self.bad_rep.beat_channel.events[time_difference] == False:
-                self.model.update_contract()
-                print "smaller"
+            current_beat = self.bad_rep.beat_channel.events[time_difference]
+            self.model.update_beat(current_beat)
 
+        # if time_difference in self.bad_rep.chord_channel.event:
+        #     current_chord = self.bad_rep.chord_channel.event[time_difference]
+        #     self.model.update_chord(current_chord)
 
-
-     #    if time_difference in self.bad_rep.lyric_sentiment_channel.event:
+        # if time_difference in self.bad_rep.lyric_sentiment_channel.event:
         #   current_sentiment = self.bad_rep.lyric_sentiment_channel.event
-     #      positive= current_sentiment[0]
-     #      negative= current_sentiment[1]
-     #      neutral= current_sentiment[2]
-     #      self.model.update_color(positive, negative, neutral)
+        #   positive= current_sentiment[0]
+        #   negative= current_sentiment[1]
+        #   neutral= current_sentiment[2]
+        #   self.model.update_color(positive, negative, neutral)
         # else:
         #   print "no color change"
 
@@ -115,7 +113,7 @@ class View(object):
             [center_x,center_y], self.model.r_cirle)    
         
         #square, starts bottom left, clockwise
-        pygame.draw.polygon(self.screen, pygame.Color('green'),
+        pygame.draw.polygon(self.screen, pygame.Color('blue'),
             [(center_x-self.model.r_square*math.cos(math.pi/4), center_y+self.model.r_square*math.sin(math.pi/4)),
             (center_x-self.model.r_square*math.cos(math.pi/4), center_y-self.model.r_square*math.sin(math.pi/4)),
             (center_x+self.model.r_square*math.cos(math.pi/4), center_y-self.model.r_square*math.sin(math.pi/4)),
@@ -139,9 +137,9 @@ class Model(object):
         self.width= width
         self.height= height
         self.r_cirle= 100
-        self.r_square= 100
-        self.r_rhombus= 100
-        self.r_octogon= 100
+        self.r_square= 110
+        self.r_rhombus= 110
+        self.r_octogon= 110
         self.beat_expansion= 50
         self.color= (75, 1, 130)
 
@@ -149,22 +147,28 @@ class Model(object):
     #   """updates the rgb values based off of the lyric sentiment"""
     #   self.color= (75*pos, 1*neg, 130*nuetral)
 
-    def update_expand(self):
-        """updates model state"""
-        #initializing shape radii
-        #need to set an expansion variable for easier flexibility, use current+=expansion
-        self.r_cirle+= self.beat_expansion
-        self.r_square+= self.beat_expansion
-        self.r_rhombus+= self.beat_expansion
-        self.r_octogon+= self.beat_expansion
+    def update_beat(self, beat):
+        """"""
+        if beat:
+            self.r_cirle+= self.beat_expansion
+            self.r_square+= self.beat_expansion
+            self.r_rhombus+= self.beat_expansion
+            self.r_octogon+= self.beat_expansion
 
-    def update_contract(self):
-        #resets radii
-        #need to use an expansion variable to return to previous radii size
-        self.r_cirle-= self.beat_expansion
-        self.r_square-= self.beat_expansion
-        self.r_rhombus-= self.beat_expansion
-        self.r_octogon-= self.beat_expansion
+        elif beat == False:
+            self.r_cirle-= self.beat_expansion
+            self.r_square-= self.beat_expansion
+            self.r_rhombus-= self.beat_expansion
+            self.r_octogon-= self.beat_expansion
+
+    def update_chord(self, chord):
+        """updating the shapes """
+        if chord == Major:
+            self.r_square+= 3
+            self.r_rhombus-= 2
+        elif chord == Minor:
+            self.r_square-= 2
+            self.r_rhombus+= 3   
 
 if __name__=='__main__':
     """When the code is ran, the visualizer sets up as specified"""
