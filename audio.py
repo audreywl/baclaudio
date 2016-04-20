@@ -38,10 +38,10 @@ class Song(object):
 		self.filename=filename
 		self.name=name
 		self.waveform, self.sample_rate = librosa.load(self.filename)
-		#self.line_time = self.lyrics.events.keys()
 
 	def __str__(self):
 		return self.name
+
 	def beat_analysis(self):
 		"""runs the analysis on the song to determine where the beats are, and adds a beat channel"""
 		self.tempo, self.beat_frames = librosa.beat.beat_track(self.waveform,self.sample_rate)
