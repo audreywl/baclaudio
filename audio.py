@@ -1,7 +1,7 @@
 """This is the development file for processing and playing back the audio. 
-    It is called from the visualization file using the current time stamp, 
-    and provides a value for bpm, mood (key), and where the timestamp is 
-    in relation to the beats."""
+	It is called from the visualization file using the current time stamp, 
+	and provides a value for bpm, mood (key), and where the timestamp is 
+	in relation to the beats."""
 import time
 import numpy
 import pygame.mixer
@@ -13,24 +13,24 @@ import urllib2, json
 from pprint import pprint
 
 class Channel(object):
-    """This is the class that controls the format for visualizer inputs"""
-    def __init__(self,channel_type,first_value,time_start=None):
-        """Intializes the channel class. If time_start=None, the time starts at 00:00:00"""
-        self.channel_type=channel_type
-        self.events={}
-        if time_start==None:
-            time_start=datetime.timedelta()
-        elif type(time_start)!=datetime.timedelta:
-            raise TypeError('Must start with a time object')
-        self.events[time_start]=first_value
-        self.previous_value=first_value
-    def __str__(self):
-        return self.channel_type
-    def update(self, time, new_value):
-        self.events[time]=new_value
-        if type(time)!=datetime.timedelta:
-            raise TypeError('Time argument must be a timedelta object')
-        previous_value=new_value        
+	"""This is the class that controls the format for visualizer inputs"""
+	def __init__(self,channel_type,first_value,time_start=None):
+		"""Intializes the channel class. If time_start=None, the time starts at 00:00:00"""
+		self.channel_type=channel_type
+		self.events={}
+		if time_start==None:
+			time_start=datetime.timedelta()
+		elif type(time_start)!=datetime.timedelta:
+			raise TypeError('Must start with a time object')
+		self.events[time_start]=first_value
+		self.previous_value=first_value
+	def __str__(self):
+		return self.channel_type
+	def update(self, time, new_value):
+		self.events[time]=new_value
+		if type(time)!=datetime.timedelta:
+			raise TypeError('Time argument must be a timedelta object')
+		previous_value=new_value        
 
 class Song(object):
     """Stores song metadata and analysis functions"""
@@ -50,9 +50,32 @@ class Song(object):
         for second in self.beat_times:
             #rounds time to 1/10 of a second
             second = round(second, 1)
+            next_second = second + .1
             time=datetime.timedelta(0,second)
+            next_time= datetime.timedelta(0, next_second)
             #saves beat in channel
             self.beat_channel.update(time, True)
+            self.beat_channel.update(next_time, False)
+
+    def chord_analysis(self):
+        """runs the analysis on the song to determine when the chords are major and minor"""
+        self.harmonic_waveform = librosa.effects.harmonic(self.waveform)
+        self.tonnetz = librosa.feature.tonnetz(self.harmonic_waveform,self.sample_rate)
+        numpy.delete(self.tonnetz, [0,1,3,5], 1)
+        #after this step, it's just a column vector with 0s for frames with minor and 1 for major
+        major_frames = numpy.argmax(self.tonnetz, 0)
+        frames = [i for i in range(len(major_frames))]
+        self.frame_times = librosa.frames_to_time(frames, self.sample_rate)
+        self.chord_channel=Channel('Chords: Major or Minor','Major')
+        for i in frames:
+            #rounds time to 1/10 of a second
+            second = self.frame_times[i]
+            second = round(second, 1)
+            # next_second = second + .1
+            time=datetime.timedelta(0,second)
+            #saves beat in channel
+            self.chord_channel.update(time, major_frames[i])
+            #self.beat_channel.update(next_time, False)
 
     def lyric_lines(self, song, times):
         """Takes the list created from the .txt song file and puts into Channel.
@@ -157,11 +180,11 @@ class Song(object):
             except urllib2.HTTPError:
                 print "error!"
 
-
 #loads the song and runs analysis
 bad_rep=Song('Bad_Reputation.mp3','Bad Reputation')
-bad_rep.beat_analysis()
 
+bad_rep.beat_analysis()
+bad_rep.chord_analysis()
 bad_rep.lyric_sentiment()
 # pprint(bad_rep.lyrics_sentiment.events)
 
@@ -183,7 +206,12 @@ while pygame.mixer.music.get_busy():
     time_difference=datetime.datetime.now()-start
     rounded_time=round(time_difference.total_seconds(),1)
     time_difference=datetime.timedelta(0,rounded_time)
-    #checks if the current time is a beat
-    if time_difference in bad_rep.beat_channel.events:
-        print 'beat'
+
+    # #checks if the current time is a beat
+    # if time_difference in bad_rep.beat_channel.events:
+    #     print 'beat'
+    if bad_rep.chord_channel.events[time_difference] == 1:
+    	print 'Major'
+    elif bad_rep.chord_channel.events[time_difference] == 0:
+    	print 'Minor'
     clock.tick(10)
