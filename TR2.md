@@ -33,8 +33,11 @@ Brief explanation of code’s current state
 
 ###Discussion Time!(20 min):
 We have three main questions that we would like to cover in this review
+
 1. Beat Analysis
+
 2. Pygame Visualization
+
 3. Key Analysis 
 
 If there is time at the end we will talk a bit about storing channel data and accessing it easily later to increase code flexibility. We want to group and store a song’s .mp3 file, .txt or .lrc file, and the song attributes and channels created in the first analysis of the song.
