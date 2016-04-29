@@ -14,16 +14,17 @@ from pprint import pprint
 
 class Channel(object):
 	"""This is the class that controls the format for visualizer inputs"""
-	def __init__(self,channel_type,first_value,time_start=None):
+	def __init__(self,channel_type,first_value=None,time_start=None):
 		"""Intializes the channel class. If time_start=None, the time starts at 00:00:00"""
 		self.channel_type=channel_type
 		self.events={}
-		if time_start==None:
-			time_start=datetime.timedelta()
-		elif type(time_start)!=datetime.timedelta:
-			raise TypeError('Must start with a time object')
-		self.events[time_start]=first_value
-		self.previous_value=first_value
+		if first_value != None:
+			if time_start==None:
+				time_start=datetime.timedelta()
+			elif type(time_start)!=datetime.timedelta:
+				raise TypeError('Must start with a time object')
+			self.events[time_start]=first_value
+			self.previous_value=first_value
 	def __str__(self):
 		return self.channel_type
 	def update(self, time, new_value):
@@ -57,25 +58,46 @@ class Song(object):
             self.beat_channel.update(time, True)
             self.beat_channel.update(next_time, False)
 
+    # def chord_analysis(self):
+    #     """runs the analysis on the song to determine when the chords are major and minor"""
+    #     self.harmonic_waveform = librosa.effects.harmonic(self.waveform)
+    #     self.tonnetz = librosa.feature.tonnetz(self.harmonic_waveform,self.sample_rate)
+    #     numpy.delete(self.tonnetz, [0,1,3,5], 1)
+    #     #after this step, it's just a column vector with 0s for frames with minor and 1 for major
+    #     major_frames = numpy.argmax(self.tonnetz, 0)
+    #     frames = [i for i in range(len(major_frames))]
+    #     self.frame_times = librosa.frames_to_time(frames, self.sample_rate)
+    #     self.chord_channel=Channel('Chords: Major or Minor','Major')
+    #     for i in frames:
+    #         #rounds time to 1/10 of a second
+    #         second = self.frame_times[i]
+    #         second = round(second, 1)
+    #         # next_second = second + .1
+    #         time=datetime.timedelta(0,second)
+    #         #saves beat in channel
+    #         self.chord_channel.update(time, major_frames[i])
+    #         #self.beat_channel.update(next_time, False)
+
     def chord_analysis(self):
-        """runs the analysis on the song to determine when the chords are major and minor"""
+        """runs the analysis on the song to determine what the chord is"""
         self.harmonic_waveform = librosa.effects.harmonic(self.waveform)
-        self.tonnetz = librosa.feature.tonnetz(self.harmonic_waveform,self.sample_rate)
-        numpy.delete(self.tonnetz, [0,1,3,5], 1)
-        #after this step, it's just a column vector with 0s for frames with minor and 1 for major
-        major_frames = numpy.argmax(self.tonnetz, 0)
-        frames = [i for i in range(len(major_frames))]
+        self.chroma = librosa.feature.chroma_cqt(self.harmonic_waveform,self.sample_rate)
+        major_frames = numpy.argmax(self.chroma, 0)
+        frames = [i for i in range(len(major_frames))] #LOOK AT THAT LIST COMPREHENSION
+        major_frames = [major_frames[i] for i in range(len(major_frames))] #AND THAT ONE
+        keys = [major_frames.count(i) for i in range(0,12)]
+        sort_keys = sorted(keys, reverse = True)
+        self.key_mode = keys.index(sort_keys[0])
         self.frame_times = librosa.frames_to_time(frames, self.sample_rate)
-        self.chord_channel=Channel('Chords: Major or Minor','Major')
+        self.chord_channel=Channel('Chords: C-B')
         for i in frames:
             #rounds time to 1/10 of a second
             second = self.frame_times[i]
             second = round(second, 1)
-            # next_second = second + .1
             time=datetime.timedelta(0,second)
             #saves beat in channel
             self.chord_channel.update(time, major_frames[i])
-            #self.beat_channel.update(next_time, False)
+            
 
     def lyric_lines(self, song, times):
         """Takes the list created from the .txt song file and puts into Channel.
@@ -180,38 +202,35 @@ class Song(object):
             except urllib2.HTTPError:
                 print "error!"
 
-#loads the song and runs analysis
-bad_rep=Song('Bad_Reputation.mp3','Bad Reputation')
+if __name__ == '__main__':
+	#loads the song and runs analysis
+	bad_rep=Song('Bad_Reputation.mp3','Bad Reputation')
 
-bad_rep.beat_analysis()
-bad_rep.chord_analysis()
-bad_rep.lyric_sentiment()
-# pprint(bad_rep.lyrics_sentiment.events)
+	#bad_rep.beat_analysis()
+	bad_rep.chord_analysis()
+	#bad_rep.lyric_sentiment()
+	# pprint(bad_rep.lyrics_sentiment.events)
+	#starts pygame
+	pygame.init()
+	pygame.display.set_mode((200,100))
+	pygame.mixer.music.load('Bad_Reputation.mp3')
+	#starts playing music and starts the clock
+	pygame.mixer.music.play(0)
+	start=datetime.datetime.now()
+	pygame.mixer.music.set_volume(0.5)
+	clock = pygame.time.Clock()
+	clock.tick(10)
+	while pygame.mixer.music.get_busy():
+	    for event in pygame.event.get():
+	        if event.type == QUIT:
+	            pygame.quit()
+	    #figures out how long it's been since the song started and rounds
+	    time_difference=datetime.datetime.now()-start
+	    rounded_time=round(time_difference.total_seconds(),1)
+	    time_difference=datetime.timedelta(0,rounded_time)
 
-#starts pygame
-pygame.init()
-pygame.display.set_mode((200,100))
-pygame.mixer.music.load('Bad_Reputation.mp3')
-#starts playing music and starts the clock
-pygame.mixer.music.play(0)
-start=datetime.datetime.now()
-pygame.mixer.music.set_volume(0.5)
-clock = pygame.time.Clock()
-clock.tick(10)
-while pygame.mixer.music.get_busy():
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-    #figures out how long it's been since the song started and rounds
-    time_difference=datetime.datetime.now()-start
-    rounded_time=round(time_difference.total_seconds(),1)
-    time_difference=datetime.timedelta(0,rounded_time)
-
-    # #checks if the current time is a beat
-    # if time_difference in bad_rep.beat_channel.events:
-    #     print 'beat'
-    if bad_rep.chord_channel.events[time_difference] == 1:
-    	print 'Major'
-    elif bad_rep.chord_channel.events[time_difference] == 0:
-    	print 'Minor'
-    clock.tick(10)
+	    # #checks if the current time is a beat
+	    # if time_difference in bad_rep.beat_channel.events:
+	    #     print 'beat'
+	    bad_rep.chord_channel.events[time_difference]
+	    clock.tick(10)
