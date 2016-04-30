@@ -21,15 +21,46 @@ class View(object):
         #background color
         self.screen.fill(pygame.Color('black'))
 
-        #this is where we put the polygon(s)
-        #cicle ([center], radius)
-        pygame.draw.circle(self.screen, pygame.Color('green'), 
-            (int(self.model.dot.center_x), int(self.model.dot.center_y)),
-            self.model.DOT_RADIUS)
+        #what to draw    
+        # print len(self.model.functions)
+        # for function in self.model.functions:
+        #     pygame.draw.lines(self.screen, pygame.Color('green'),
+        #         False, function, 3)
 
-        #this method of drawing the function slows down the computation
-        pygame.draw.lines(self.screen, pygame.Color('green'),
-            False, self.model.line_points, 3)
+        # i=len(self.model.functions)
+        # if i==1:
+        #     pygame.draw.lines(self.screen, pygame.Color('green'),
+        #         False, self.model.functions[0], 3)
+        # if i== 2:
+        #     pygame.draw.lines(self.screen, pygame.Color('green'),
+        #         False, self.model.functions[0], 3)
+        #     pygame.draw.lines(self.screen, pygame.Color('blue'),
+        #         False, self.model.functions[1], 3)
+        # if i== 3:
+        #     pygame.draw.lines(self.screen, pygame.Color('green'),
+        #         False, self.model.functions[0], 3)
+        #     pygame.draw.lines(self.screen, pygame.Color('blue'),
+        #         False, self.model.functions[1], 3)
+        #     pygame.draw.lines(self.screen, pygame.Color('purple'),
+        #         False, self.model.functions[2], 3) 
+        # if i== 4:
+        #     pygame.draw.lines(self.screen, pygame.Color('green'),
+        #         False, self.model.functions[0], 3)
+        #     pygame.draw.lines(self.screen, pygame.Color('blue'),
+        #         False, self.model.functions[1], 3)
+        #     pygame.draw.lines(self.screen, pygame.Color('purple'),
+        #         False, self.model.functions[2], 3)
+        #     pygame.draw.lines(self.screen, pygame.Color('orange'),
+        #         False, self.model.functions[3], 3)         
+
+        for dot in self.model.dots:
+            coordinate= (int(dot.center_x), int(dot.center_y))
+
+            pygame.draw.circle(self.screen, pygame.Color('green'),
+                coordinate, self.model.DOT_RADIUS)
+            # pygame.draw.circle(self.screen, pygame.Color('green'), 
+            #     (int(self.model.dot.center_x), int(self.model.dot.center_y)),
+            #     self.model.DOT_RADIUS)
 
         #refreshes the screen
         pygame.display.update()
@@ -37,15 +68,34 @@ class View(object):
 
 class Dot(object):
     """represents the ball, which moves wrt time"""
-    def __init__(self, center_x, center_y, radius):
-        """initializing the circles that will be released on the beats"""
-        # circle(Surface, color, pos, radius, width=0)
+    def __init__(self, center_x, center_y, radius, line_point):
+        """initializing the circles that will be released on the beats. needs xy locations, 
+        and radius"""
+        # inputs for dots
         self.center_x= center_x
         self.center_y= center_y
         self.radius= radius
+        #start list of points that will be used to draw function shape
+        #line point is already a list
+        self.line_points= line_point
+        #starts increment for dot's horizontal progression
+        self.i= self.radius
+        
     def update(self):
-        """might be needed for moving the dots according to function"""
-        pass
+        """updates the increment for moving horizontally acrosee the screen"""
+        if self.center_x+self.radius< 950:#self.width:
+            #if the dot has not reached the end of the window, it keep moving on
+            #it's function path
+            self.center_x= self.i
+            self.center_y= (math.sin(math.pi*self.center_x*.005)+1)*300
+            #add current location to list for drawing
+            self.line_points.append((self.center_x, self.center_y))
+            self.i+=.08 #what's a reasonable rate for the dot to move at? make sure it's slow enough
+
+        else:  
+            #stop the dot from moving when it reaches the end of the window
+            self.center_x= self.center_x
+            self.center_y= self.center_y
 
 class Functions(object): 
     """holds the function options for the dot."""
@@ -54,11 +104,6 @@ class Functions(object):
 
     #actually have no idea why this exists
     pass
-    # def __init__(self, i):
-    #     #x is an input, y is the output
-    #     self.i= self.i
-    #     self.y= (math.sin(math.pi*self.x)+1)*300
-
 
 class Model(object):
     """stores the current state for the current time in player music"""
@@ -70,36 +115,27 @@ class Model(object):
         self.height= height
         #set constants
         self.DOT_RADIUS= 10
-        #starts increment for dot's horizontal progression
-        #not sure how to handle once there are multiple dots
-        self.i= self.DOT_RADIUS
-
-        #start list of points that will be used to draw function shape
-        self.line_points= [(self.DOT_RADIUS/2, self.height/2)]
-
-        #set release point of all the dots (for now just one)
-        self.dot= Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS)
+        #list of dots that will be drawn in view
+        self.dots=[]
+        #list that will hold lists of points to draw functions
+        self.functions= []
+        #starting point for all dots---- SETTING 2 BECUSE DRAWING LINES NEED 2+ POINTS
+        self.starting_point= [(self.DOT_RADIUS/2, self.height/2), (self.DOT_RADIUS/2, self.height/2)]
+        self.counter=0
 
     def update(self):
         """updates the visualizer state"""
-        #maybe move all of this into the Functions (or Functions_update?)class, use 
-        #if statements for each dot to choose the function there, then here use 
-        #these if statements to decide whether to update or stop moving
+        #initializes a dot. this is what we will alter for beats.      
+        if self.counter==1 or self.counter==1000 or self.counter==2000 or self.counter==3000:
+            #set release point for dot
+            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
+                            self.starting_point))
+            self.functions.append(self.starting_point)
 
-        if self.dot.center_x+self.DOT_RADIUS< self.width:
-            #if the dot has not reached the end of the window, it keep moving on
-            #it's function path
-            self.dot.center_x= self.i
-            self.dot.center_y= (math.sin(math.pi*self.dot.center_x*.005)+1)*300
-            self.line_points.append((self.dot.center_x, self.dot.center_y))
-            self.i+=.08 #what's a reasonable rate for the dot to move at? make sure it's slow enough
+        for dot in self.dots:
+            dot.update()
 
-        else:   #elif int(self.dot.center_x-self.DOT_RADIUS)== self.width:
-            #stop the dot from moving when it reached the end of the window
-            #make the locations equal themselves so they are constant?
-            self.dot.center_x= self.dot.center_x
-            self.dot.center_y= self.dot.center_y
-
+        self.counter+=1    
 
 if __name__=='__main__':
     """When the code is ran, the visualizer sets up as specified"""
