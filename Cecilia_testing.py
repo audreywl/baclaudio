@@ -51,6 +51,8 @@ class Song(object):
             #saves beat in channel
             self.beat_channel.update(time, True)
             self.beat_channel.update(next_time, False)
+            print time
+            print next_time
 
 
 #set up the visualizer view
@@ -82,6 +84,7 @@ class View(object):
         if time_difference in self.bad_rep.beat_channel.events:
             current_beat = self.bad_rep.beat_channel.events[time_difference]
             self.model.update_beat(current_beat)
+            print time_difference
 
         # if time_difference in self.bad_rep.chord_channel.event:
         #     current_chord = self.bad_rep.chord_channel.event[time_difference]
@@ -154,21 +157,25 @@ class Model(object):
             self.r_square+= self.beat_expansion
             self.r_rhombus+= self.beat_expansion
             self.r_octogon+= self.beat_expansion
+            print "grow"
 
         elif beat == False:
             self.r_cirle-= self.beat_expansion
             self.r_square-= self.beat_expansion
             self.r_rhombus-= self.beat_expansion
             self.r_octogon-= self.beat_expansion
+            print "shrink"
+            print ""
 
     def update_chord(self, chord):
         """updating the shapes """
-        if chord == Major:
+        if chord == 1: #Major
             self.r_square+= 3
             self.r_rhombus-= 2
-        elif chord == Minor:
+        elif chord == 0: #Minor
             self.r_square-= 2
-            self.r_rhombus+= 3   
+            self.r_rhombus+= 3  
+
 
 if __name__=='__main__':
     """When the code is ran, the visualizer sets up as specified"""
@@ -194,4 +201,4 @@ if __name__=='__main__':
         view.draw()
         view.beat_visual()
         time.sleep(.001)
-             
+#              
