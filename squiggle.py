@@ -8,13 +8,30 @@ import datetime
 import math
 from pygame import QUIT
 
+
+sent = [0.3, 
+        0.7, 
+        0.6]
+
 #set up the visualizer view
+class Color_Gradient(object):
+    def __init__(self,sent):
+        percentPos = sent[0]
+        percentNeg = sent[1]
+        percentNeu = sent[2]
+        self.color = (148*percentPos, 
+                      145*percentPos, 
+                      142*percentNeg)
+        #self.color = (251, 242, 35) #YELLOW
+        #self.color = (46, 49, 250) #BLUE
+
 class View(object):
     """brings up the pygame window"""
-    def __init__(self, model, size):
+    def __init__(self, model, size, Color_Gradient):
         """initialize the view with specific model and screen dimensions"""
         self.model= model
         self.screen= pygame.display.set_mode(size)
+        self.Color_Gradient = color
 
     def draw(self):
         """draws the visualizer on the screen"""
@@ -23,12 +40,12 @@ class View(object):
 
         #this is where we put the polygon(s)
         #cicle ([center], radius)
-        pygame.draw.circle(self.screen, pygame.Color('green'), 
+        pygame.draw.circle(self.screen, self.Color_Gradient.color, 
             (int(self.model.dot.center_x), int(self.model.dot.center_y)),
             self.model.DOT_RADIUS)
 
         #this method of drawing the function slows down the computation
-        pygame.draw.lines(self.screen, pygame.Color('green'),
+        pygame.draw.lines(self.screen, self.Color_Gradient.color,
             False, self.model.line_points, 3)
 
         #refreshes the screen
@@ -106,9 +123,10 @@ if __name__=='__main__':
     pygame.init()
     #select screen size
     size= (950, 650)
+    color = Color_Gradient(sent)
 
     model= Model(size[0], size[1])
-    view= View(model, size)
+    view= View(model, size, color)
     running= True
     #checks if the user closes the window   
     while running:
