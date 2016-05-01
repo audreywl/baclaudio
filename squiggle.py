@@ -20,7 +20,7 @@ class View(object):
         """draws the visualizer on the screen"""
         #background color
         self.screen.fill(pygame.Color('black'))
-
+#DEBUGGING THE FUNCTION LINES. FIRST IS CONSICE, SECOND IS FOR UNDERSTANDING THE PROBLEM.
         #what to draw    
         # print len(self.model.functions)
         # for function in self.model.functions:
@@ -56,7 +56,7 @@ class View(object):
         for dot in self.model.dots:
             coordinate= (int(dot.center_x), int(dot.center_y))
 
-            pygame.draw.circle(self.screen, pygame.Color('green'),
+            pygame.draw.circle(self.screen, dot.color,
                 coordinate, self.model.DOT_RADIUS)
             # pygame.draw.circle(self.screen, pygame.Color('green'), 
             #     (int(self.model.dot.center_x), int(self.model.dot.center_y)),
@@ -67,8 +67,8 @@ class View(object):
 
 
 class Dot(object):
-    """represents the ball, which moves wrt time"""
-    def __init__(self, center_x, center_y, radius, line_point):
+    """represents the dot"""
+    def __init__(self, center_x, center_y, radius, line_point, color, func):
         """initializing the circles that will be released on the beats. needs xy locations, 
         and radius"""
         # inputs for dots
@@ -78,8 +78,12 @@ class Dot(object):
         #start list of points that will be used to draw function shape
         #line point is already a list
         self.line_points= line_point
+        #sets the color for the dot
+        self.color= color
         #starts increment for dot's horizontal progression
-        self.i= self.radius
+        self.i= self.radius 
+        #the function path the dot will follow-- IS A LAMBDA FUNCTION
+        self.func=func
         
     def update(self):
         """updates the increment for moving horizontally acrosee the screen"""
@@ -87,7 +91,7 @@ class Dot(object):
             #if the dot has not reached the end of the window, it keep moving on
             #it's function path
             self.center_x= self.i
-            self.center_y= (math.sin(math.pi*self.center_x*.005)+1)*300
+            self.center_y= self.func(self.center_x)            
             #add current location to list for drawing
             self.line_points.append((self.center_x, self.center_y))
             self.i+=.08 #what's a reasonable rate for the dot to move at? make sure it's slow enough
@@ -97,13 +101,24 @@ class Dot(object):
             self.center_x= self.center_x
             self.center_y= self.center_y
 
-class Functions(object): 
-    """holds the function options for the dot."""
-    #this might eventually work like the channel class to create "unique" functions
-    #for each dot.
+class Color_Gradient(object):
+    def __init__(self,sent):
+        percentPos = sent[0]
+        percentNeg = sent[1]
+        percentNeu = sent[2]
+        self.color = (148*percentPos, 
+                      145*percentPos, 
+                      142*percentNeg)
+        #self.color = (251, 242, 35) #YELLOW
+        #self.color = (46, 49, 250) #BLUE        
 
-    #actually have no idea why this exists
-    pass
+class Functions(object): 
+    """Holds all of the paths for the dots as lambda functions."""
+    def __init__(self, key): #key is identified by number 0-11
+        self.key= key
+        self.functions= [lambda x:(math.sin(math.pi*x/75) +1)*325,  
+                         lambda x: (math.sin(math.pi*x*.005)+1)*300]
+        self.func= self.functions[self.key]
 
 class Model(object):
     """stores the current state for the current time in player music"""
@@ -125,11 +140,26 @@ class Model(object):
 
     def update(self):
         """updates the visualizer state"""
-        #initializes a dot. this is what we will alter for beats.      
+        #initializes a dot. 
+        #THIS WILL BE ALTERED FOR BEATS.      
         if self.counter==1 or self.counter==1000 or self.counter==2000 or self.counter==3000:
-            #set release point for dot
+            #THIS WILL BE ALTERED FOR CURRENT KEY
+            if self.counter==1 or self.counter==2000:
+                key=0
+            else:
+                key=1    
+            self.func= Functions(key)
+
+            #THIS WILL BE ALTERED FOR CURRENT SENTIMENT
+            if self.counter==1 or self.counter== 2000:
+                sent = [0.3, 0.7, 0.6]
+            else:
+                sent= [0.7,0.3,0.6]        
+            self.color= Color_Gradient(sent)
+
+            #create a dot that corresponds to current sentiment
             self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point))
+                            self.starting_point, self.color.color, self.func.func))
             self.functions.append(self.starting_point)
 
         for dot in self.dots:

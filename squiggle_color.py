@@ -8,20 +8,38 @@ import datetime
 import math
 from pygame import QUIT
 
-
-sent = [0.3, 
+sent = [0.8248795702945482, 
         0.7, 
         0.6]
 
 #set up the visualizer view
 class Color_Gradient(object):
     def __init__(self,sent):
+        round_sent = round(sent[0], 1)
         percentPos = sent[0]
         percentNeg = sent[1]
         percentNeu = sent[2]
-        self.color = (148*percentPos, 
-                      145*percentPos, 
-                      142*percentNeg)
+        color_dict = {1:(77, 138, 240), 
+                     .9:(78, 182, 240), 
+                     .8:(78, 226, 241), 
+                     .7:(78, 242, 214),
+                     .6:(79, 243, 172),
+                     .5:(79, 244, 129),
+                     .4:(79, 246, 86),
+                     .3:(117, 247, 80),
+                     .2:(162, 248, 80),
+                     .1:(207, 249, 80),
+                     0:(250, 248, 81)}
+        print round_sent
+        
+        if round_sent in color_dict:
+            self.color = color_dict[round_sent]
+            print color_dict[round_sent]
+        else:
+            self.color = (251, 242, 35)
+        #self.color = (148*percentPos, 
+        #              145*percentPos, 
+        #              142*percentNeg)
         #self.color = (251, 242, 35) #YELLOW
         #self.color = (46, 49, 250) #BLUE
 
