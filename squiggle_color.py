@@ -8,7 +8,6 @@ import datetime
 import math
 from pygame import QUIT
 
-
 sent = [0.8248795702945482, 
         0.7, 
         0.6]
