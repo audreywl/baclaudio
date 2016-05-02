@@ -20,47 +20,19 @@ class View(object):
         """draws the visualizer on the screen"""
         #background color
         self.screen.fill(pygame.Color('black'))
+        
 #DEBUGGING THE FUNCTION LINES. FIRST IS CONSICE, SECOND IS FOR UNDERSTANDING THE PROBLEM.
         #what to draw    
         # print len(self.model.functions)
         # for function in self.model.functions:
         #     pygame.draw.lines(self.screen, pygame.Color('green'),
-        #         False, function, 3)
-
-        # i=len(self.model.functions)
-        # if i==1:
-        #     pygame.draw.lines(self.screen, pygame.Color('green'),
-        #         False, self.model.functions[0], 3)
-        # if i== 2:
-        #     pygame.draw.lines(self.screen, pygame.Color('green'),
-        #         False, self.model.functions[0], 3)
-        #     pygame.draw.lines(self.screen, pygame.Color('blue'),
-        #         False, self.model.functions[1], 3)
-        # if i== 3:
-        #     pygame.draw.lines(self.screen, pygame.Color('green'),
-        #         False, self.model.functions[0], 3)
-        #     pygame.draw.lines(self.screen, pygame.Color('blue'),
-        #         False, self.model.functions[1], 3)
-        #     pygame.draw.lines(self.screen, pygame.Color('purple'),
-        #         False, self.model.functions[2], 3) 
-        # if i== 4:
-        #     pygame.draw.lines(self.screen, pygame.Color('green'),
-        #         False, self.model.functions[0], 3)
-        #     pygame.draw.lines(self.screen, pygame.Color('blue'),
-        #         False, self.model.functions[1], 3)
-        #     pygame.draw.lines(self.screen, pygame.Color('purple'),
-        #         False, self.model.functions[2], 3)
-        #     pygame.draw.lines(self.screen, pygame.Color('orange'),
-        #         False, self.model.functions[3], 3)         
+        #         False, function, 3)    
 
         for dot in self.model.dots:
             coordinate= (int(dot.center_x), int(dot.center_y))
 
             pygame.draw.circle(self.screen, dot.color,
                 coordinate, self.model.DOT_RADIUS)
-            # pygame.draw.circle(self.screen, pygame.Color('green'), 
-            #     (int(self.model.dot.center_x), int(self.model.dot.center_y)),
-            #     self.model.DOT_RADIUS)
 
         #refreshes the screen
         pygame.display.update()
@@ -68,7 +40,7 @@ class View(object):
 
 class Dot(object):
     """represents the dot"""
-    def __init__(self, center_x, center_y, radius, line_point, color, func):
+    def __init__(self, center_x, center_y, radius, line_point, color, func, inc):
         """initializing the circles that will be released on the beats. needs xy locations, 
         and radius"""
         # inputs for dots
@@ -84,6 +56,8 @@ class Dot(object):
         self.i= self.radius 
         #the function path the dot will follow-- IS A LAMBDA FUNCTION
         self.func=func
+        #controls the speed of the horizontal progression of the dot
+        self.inc= inc
         
     def update(self):
         """updates the increment for moving horizontally acrosee the screen"""
@@ -94,7 +68,7 @@ class Dot(object):
             self.center_y= self.func(self.center_x)            
             #add current location to list for drawing
             self.line_points.append((self.center_x, self.center_y))
-            self.i+=.08 #what's a reasonable rate for the dot to move at? make sure it's slow enough
+            self.i+=self.inc #what's a reasonable rate for the dot to move at? make sure it's slow enough
 
         else:  
             #stop the dot from moving when it reaches the end of the window
@@ -103,22 +77,64 @@ class Dot(object):
 
 class Color_Gradient(object):
     def __init__(self,sent):
+        round_sent = round(sent[0], 1)
         percentPos = sent[0]
         percentNeg = sent[1]
         percentNeu = sent[2]
-        self.color = (148*percentPos, 
-                      145*percentPos, 
-                      142*percentNeg)
+        color_dict = {1:(77, 138, 240), 
+                     .9:(78, 182, 240), 
+                     .8:(78, 226, 241), 
+                     .7:(78, 242, 214),
+                     .6:(79, 243, 172),
+                     .5:(79, 244, 129),
+                     .4:(79, 246, 86),
+                     .3:(117, 247, 80),
+                     .2:(162, 248, 80),
+                     .1:(207, 249, 80),
+                     0:(250, 248, 81)}
+        
+        if round_sent in color_dict:
+            self.color = color_dict[round_sent]
+        else:
+            self.color = (251, 242, 35)
+        #self.color = (148*percentPos, 
+        #              145*percentPos, 
+        #              142*percentNeg)
         #self.color = (251, 242, 35) #YELLOW
-        #self.color = (46, 49, 250) #BLUE        
+        #self.color = (46, 49, 250) #BLUE      
 
 class Functions(object): 
     """Holds all of the paths for the dots as lambda functions."""
     def __init__(self, key): #key is identified by number 0-11
         self.key= key
-        self.functions= [lambda x:(math.sin(math.pi*x/75) +1)*325,  
-                         lambda x: (math.sin(math.pi*x*.005)+1)*300]
+        self.functions= [lambda x: (math.sin(math.pi*x/75) +1)*325,  
+                         lambda x: (math.sin(math.pi*x*.005)+1)*300,
+                         lambda x: (math.cos(math.pi*x/90) +3)*100,
+                         lambda x: (math.cos(math.pi*x*.0011)+1)*300,
+                         lambda x: (math.sin(math.pi*x/80) +1.5)*200,
+                         lambda x: (math.sin(2*math.sin(2*math.sin(2*math.sin(x*0.02))))+1)*300,
+                         lambda x: (50*math.sin(2*math.pi*x/300)+0.5*x),
+                         lambda x: (-0.2*x +325),
+                         lambda x: (50*math.sin(2*math.pi/50*x))+250*math.sin(math.pi/250*x)+325,
+                         lambda x: -(50*math.sin(2*math.pi*x/300)+0.5*x)+650,
+                         lambda x: -(math.sin(2*math.sin(2*math.sin(2*math.sin(x*0.02))))-1)*300,
+                         lambda x: (0.2*x +325)]
         self.func= self.functions[self.key]
+
+        #increments maps with functions, controls speeds
+        self.increment= [0.08,
+                        0.1, 
+                        0.4, 
+                        0.2, 
+                        0.1, 
+                        0.08, 
+                        0.2, 
+                        0.2,
+                        0.08,
+                        0.2,
+                        0.08,
+                        0.2 ]
+        self.inc= self.increment[self.key]
 
 class Model(object):
     """stores the current state for the current time in player music"""
@@ -144,10 +160,12 @@ class Model(object):
         #THIS WILL BE ALTERED FOR BEATS.      
         if self.counter==1 or self.counter==1000 or self.counter==2000 or self.counter==3000:
             #THIS WILL BE ALTERED FOR CURRENT KEY
-            if self.counter==1 or self.counter==2000:
-                key=0
+            if self.counter==1:
+                key=9
+            elif self.counter==2000:
+                key=9   
             else:
-                key=1    
+                key=9   
             self.func= Functions(key)
 
             #THIS WILL BE ALTERED FOR CURRENT SENTIMENT
@@ -159,7 +177,8 @@ class Model(object):
 
             #create a dot that corresponds to current sentiment
             self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func.func))
+                            self.starting_point, self.color.color, self.func.func,
+                            self.func.inc))
             self.functions.append(self.starting_point)
 
         for dot in self.dots:
