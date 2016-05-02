@@ -186,32 +186,32 @@ bad_rep=Song('Bad_Reputation.mp3','Bad Reputation')
 bad_rep.beat_analysis()
 bad_rep.chord_analysis()
 bad_rep.lyric_sentiment()
-# pprint(bad_rep.lyrics_sentiment.events)
+pprint(bad_rep.lyrics_sentiment.events)
 
-#starts pygame
-pygame.init()
-pygame.display.set_mode((200,100))
-pygame.mixer.music.load('Bad_Reputation.mp3')
-#starts playing music and starts the clock
-pygame.mixer.music.play(0)
-start=datetime.datetime.now()
-pygame.mixer.music.set_volume(0.5)
-clock = pygame.time.Clock()
-clock.tick(10)
-while pygame.mixer.music.get_busy():
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-    #figures out how long it's been since the song started and rounds
-    time_difference=datetime.datetime.now()-start
-    rounded_time=round(time_difference.total_seconds(),1)
-    time_difference=datetime.timedelta(0,rounded_time)
+# #starts pygame
+# pygame.init()
+# pygame.display.set_mode((200,100))
+# pygame.mixer.music.load('Bad_Reputation.mp3')
+# #starts playing music and starts the clock
+# pygame.mixer.music.play(0)
+# start=datetime.datetime.now()
+# pygame.mixer.music.set_volume(0.5)
+# clock = pygame.time.Clock()
+# clock.tick(10)
+# while pygame.mixer.music.get_busy():
+#     for event in pygame.event.get():
+#         if event.type == QUIT:
+#             pygame.quit()
+#     #figures out how long it's been since the song started and rounds
+#     time_difference=datetime.datetime.now()-start
+#     rounded_time=round(time_difference.total_seconds(),1)
+#     time_difference=datetime.timedelta(0,rounded_time)
 
-    # #checks if the current time is a beat
-    # if time_difference in bad_rep.beat_channel.events:
-    #     print 'beat'
-    if bad_rep.chord_channel.events[time_difference] == 1:
-    	print 'Major'
-    elif bad_rep.chord_channel.events[time_difference] == 0:
-    	print 'Minor'
-    clock.tick(10)
+#     # #checks if the current time is a beat
+#     # if time_difference in bad_rep.beat_channel.events:
+#     #     print 'beat'
+#     if bad_rep.chord_channel.events[time_difference] == 1:
+#     	print 'Major'
+#     elif bad_rep.chord_channel.events[time_difference] == 0:
+#     	print 'Minor'
+#     clock.tick(10)
