@@ -144,13 +144,13 @@ class Song(object):
             # create a sentiment entry for the given time (time corresponds to line)
             lyrics_sentiment.update(a_time, probability_values)
 
+if __name__ == '__main__':
+    #loads the song and runs analysis
+    bad_rep=Song('Bad_Reputation.mp3','Bad Reputation')
+    bad_rep.beat_analysis()
 
-#loads the song and runs analysis
-bad_rep=Song('Bad_Reputation.mp3','Bad Reputation')
-bad_rep.beat_analysis()
-
-bad_rep.lyric_sentiment()
-print bad_rep.lyrics_sentiment
+    bad_rep.lyric_sentiment()
+    print bad_rep.lyrics_sentiment
 
 # #starts pygame
 # pygame.init()
@@ -174,3 +174,4 @@ print bad_rep.lyrics_sentiment
 #     if time_difference in bad_rep.beat_channel.events:
 #         print 'beat'
 #     clock.tick(10)
+
