@@ -7,6 +7,7 @@ import matplotlib
 import datetime
 import math
 from pygame import QUIT
+import audio
 
 #set up the visualizer view
 class View(object):
@@ -139,11 +140,13 @@ class Functions(object):
 class Model(object):
     """stores the current state for the current time in player music"""
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, song):
         """arranges the elements on the screen"""
         #set up screen (values in if __name__= 'main')
         self.width= width
         self.height= height
+        #set song
+        self.song= song
         #set constants
         self.DOT_RADIUS= 10
         #list of dots that will be drawn in view
@@ -152,28 +155,38 @@ class Model(object):
         self.functions= []
         #starting point for all dots---- SETTING 2 BECUSE DRAWING LINES NEED 2+ POINTS
         self.starting_point= [(self.DOT_RADIUS/2, self.height/2), (self.DOT_RADIUS/2, self.height/2)]
-        self.counter=0
+###        # self.counter=0
 
-    def update(self):
+    def update(self, time_difference):
         """updates the visualizer state"""
-        #initializes a dot. 
-        #THIS WILL BE ALTERED FOR BEATS.      
-        if self.counter==1 or self.counter==1000 or self.counter==2000 or self.counter==3000:
+        #initializes a dot when there is a beat
+###        #THIS WILL BE ALTERED FOR BEATS.
+###        # if self.counter==1 or self.counter==1000 or self.counter==2000 or self.counter==3000:
             #THIS WILL BE ALTERED FOR CURRENT KEY
-            if self.counter==1:
-                key=9
-            elif self.counter==2000:
-                key=9   
-            else:
-                key=9   
-            self.func= Functions(key)
+            # if self.counter==1:
+            #     key=9
+            # elif self.counter==2000:
+            #     key=9   
+            # else:
+            #     key=9 
+            #chooses the function path based on the current chord
+        if time_difference in self.song.beat_channel.events:       
+            self.key=self.song.chord_channel.events[time_difference]            
+            self.func= Functions(self.key)
 
-            #THIS WILL BE ALTERED FOR CURRENT SENTIMENT
-            if self.counter==1 or self.counter== 2000:
-                sent = [0.3, 0.7, 0.6]
-            else:
-                sent= [0.7,0.3,0.6]        
-            self.color= Color_Gradient(sent)
+###            #THIS WILL BE ALTERED FOR CURRENT SENTIMENT
+            # if self.counter==1 or self.counter== 2000:
+            #     sent = [0.3, 0.7, 0.6]
+            # else:
+            #     sent= [0.7,0.3,0.6]
+
+            #set nuetral color for when there are no lyrics
+            self.sent= [0.5, 0.5, 0.5]
+            #check if there are lyrics at this time, if there are, the color will
+            #reflect them
+            if time_difference in self.song.lyric_sentiment.events:
+                self.sent= self.song.lyric_sentiment[time_difference]
+            self.color= Color_Gradient(self.sent)
 
             #create a dot that corresponds to current sentiment
             self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
@@ -184,23 +197,41 @@ class Model(object):
         for dot in self.dots:
             dot.update()
 
-        self.counter+=1    
+###        # self.counter+=1    
 
 if __name__=='__main__':
     """When the code is ran, the visualizer sets up as specified"""
     pygame.init()
+    #initialize the song, and run the analysis
+    pygame.mixer.music.load('Bad_Reputation.mp3')
+    song= audio.Song('Bad_Reputation.mp3', 'Bad Reputation')
+    song.beat_analysis()
+    song.lyric_sentiment()
+
     #select screen size
     size= (950, 650)
-
-    model= Model(size[0], size[1])
+    
+    model= Model(size[0], size[1], song)
     view= View(model, size)
+
+    #start playing the music, start the clock
+    pygame.mixer.music.play(0)
+    start= datetime.datetime.now()
+    pygame.mixer.music.set_volume(0.5)
+    clock= pygame.time.Clock()
+    clock.tick(10)
+
     running= True
     #checks if the user closes the window   
     while running:
         for event in pygame.event.get():
             if event.type== QUIT:
                 running= False
+        #determine how long it's been since the song started
+        time_difference=datetime.datetime.now()-self.start
+        rounded_time=round(time_difference.total_seconds(),1)
+        time_difference=datetime.timedelta(0,rounded_time)        
         #if the window is open, do these things
-        model.update()
+        model.update(time_difference)
         view.draw()
         time.sleep(.001)
