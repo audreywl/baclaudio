@@ -31,12 +31,12 @@ class Color_Gradient(object):
                      0:(250, 248, 81)}
 
         if percentNeu >= .7:
-            self.color = (255, 0, 0)
+            self.color = (0, 0, 0)
             print percentNeu
         elif percentPos in color_dict:
             self.color = color_dict[percentPos]
         else:
-            self.color = (255, 255, 255)
+            self.color = (79, 244, 129)
         #self.color = (148*percentPos, 
         #              145*percentPos, 
         #              142*percentNeg)
