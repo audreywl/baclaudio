@@ -10,15 +10,14 @@ from pygame import QUIT
 
 sent = [0.8248795702945482, 
         0.7, 
-        0.6]
+        0.5]
 
 #set up the visualizer view
 class Color_Gradient(object):
     def __init__(self,sent):
-        round_sent = round(sent[0], 1)
-        percentPos = sent[0]
-        percentNeg = sent[1]
-        percentNeu = sent[2]
+        percentPos = round(sent[0], 1)
+        percentNeg = round(sent[1], 1)
+        percentNeu = round(sent[2], 1)
         color_dict = {1:(77, 138, 240), 
                      .9:(78, 182, 240), 
                      .8:(78, 226, 241), 
@@ -30,13 +29,14 @@ class Color_Gradient(object):
                      .2:(162, 248, 80),
                      .1:(207, 249, 80),
                      0:(250, 248, 81)}
-        print round_sent
-        
-        if round_sent in color_dict:
-            self.color = color_dict[round_sent]
-            print color_dict[round_sent]
+
+        if percentNeu >= .7:
+            self.color = (255, 0, 0)
+            print percentNeu
+        elif percentPos in color_dict:
+            self.color = color_dict[percentPos]
         else:
-            self.color = (251, 242, 35)
+            self.color = (255, 255, 255)
         #self.color = (148*percentPos, 
         #              145*percentPos, 
         #              142*percentNeg)
