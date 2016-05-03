@@ -71,8 +71,11 @@ txt_name = folder_name + '.txt'
 if os.path.exists(folder_name) and os.path.isdir(folder_name):
 	os.chdir(folder_name)
 else:
+	os.makedirs(folder_name)
+	os.chdir(folder_name)
+	print os.getcwd()
 	path = find_directory()
-	find_files(path, track)
+	[song_path, lyric_path] = find_files(path, track)
 #This is where Liz's code about the folders and where stuff is located goes, and it determines filename
 #TODO: Add Liz's stuff
 song = audio.Song(filename,track,artist)
