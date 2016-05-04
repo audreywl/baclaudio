@@ -37,11 +37,12 @@ class Channel(object):
 
 class Song(object):
 	"""Stores song metadata and analysis functions"""
-	def __init__(self, filename, name='Untitled Song', artist="Unknown Artist"):
+	def __init__(self, filename, lyric_file, name='Untitled Song', artist="Unknown Artist"):
 		self.filename=filename
 		self.name=name
 		self.waveform, self.sample_rate = librosa.load(self.filename)
 		self.artist = artist
+		self.lyric_file = lyric_file
 
 	def __str__(self):
 		return self.name
@@ -169,7 +170,7 @@ class Song(object):
 		# Create lyrics channel
 		self.lyrics = Channel("Lyrics", "start lyrics:")
 		# Create readable file of lyrics (.LRC file saved as .txt)
-		f= open("bad_reputation.txt", 'r')
+		f= open(self.lyric_file, 'r')
 		song= f.read()
 		f.close
 
