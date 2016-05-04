@@ -10,7 +10,7 @@ from pygame import QUIT
 
 sent = [1, 
         0.7, 
-        0.5]
+        0.7]
 
 #set up the visualizer view
 class Color_Gradient(object):
@@ -18,20 +18,20 @@ class Color_Gradient(object):
         percentPos = round(sent[0], 1)
         percentNeg = round(sent[1], 1)
         percentNeu = round(sent[2], 1)
-        color_dict = {1:(231,3,3), 
-                     0.9:(222,85,4), 
-                     0.8:(213,160,5), 
-                     0.7:(179,204,5),
-                     0.6:(101,195,5),
-                     0.5:(29,186,6),
-                     0.4:(6,177,47),
-                     0.3:(6,168,106),
-                     0.2:(6,159,157),
-                     0.1:(6,97,150),
-                     0.0:(7,42,141)}
+        color_dict = {1:(231, 3, 3), 
+                      0.9:(222, 85, 4), 
+                      0.8:(213, 160, 5), 
+                      0.7:(179, 204, 5),
+                      0.6:(101, 195, 5),
+                      0.5:(29, 186, 6),
+                      0.4:(6, 177, 47),
+                      0.3:(6, 168, 106),
+                      0.2:(6, 159, 157),
+                      0.1:(6, 97, 150),
+                      0.0:(7, 42, 141)}
 
         if percentNeu >= .7:
-            self.color = (0, 0, 0)
+            self.color = (128, 128, 128)
             print percentNeu
         elif percentPos in color_dict:
             self.color = color_dict[percentPos]
