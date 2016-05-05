@@ -1,7 +1,7 @@
 ---
 title: How To Use
 layout: template
-filename: howtouse
+filename: khowtouse
 --- 
 # Getting Started
 The main external library that we are using to do analysis is called libROSA. libROSA has a ton of dependencies, which can be obtained by executing
