@@ -14,7 +14,7 @@
       <h1 class="project-name">BACLaudio</h1>
       <h2 class="project-tagline">an auditory visual experience brought to you by Becca, Audrey, Cecilia, and Liz</h2>
       {% for page in site.pages %}
-        <a href= {{ page.filename }}>{{ page.title }}</a>
+        <a class="btn" href= {{ page.filename }}>{{ page.title }}</a>
       {% endfor %}
       <a class="btn" href=howtouse>How To Use BACLaudio</a>
       <a class="btn" href=demos>Demos</a>
