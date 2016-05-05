@@ -1,7 +1,7 @@
 ---
-title: What else?
+title: What Else?
 layout: template
-filename: whatsnext
+filename: whatelse
 --- 
 # What more is there?
 
