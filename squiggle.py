@@ -21,57 +21,39 @@ class View(object):
         """draws the visualizer on the screen"""
         #background color
         self.screen.fill(pygame.Color('white'))
-
-###ADDING
+        #draw function paths in the background
         for path in self.model.paths.paths:
-            pygame.draw.lines(self.screen, pygame.Color('gray'), False, path)
-###ADDING        
-        
-#DEBUGGING THE FUNCTION LINES. FIRST IS CONCISE, SECOND IS FOR UNDERSTANDING THE PROBLEM.
-        #what to draw    
-        # print len(self.model.functions)
-        # for function in self.model.functions:
-        #     pygame.draw.lines(self.screen, pygame.Color('green'),
-        #         False, function, 3)    
+            pygame.draw.lines(self.screen, pygame.Color('gray'), False, path,2)
 
-        for dot in self.model.dots:
-
-###ADDING
-            pygame.draw.line(self.screen, dot.color, dot.line_points[0], 
-                            dot.line_points[1])
-###ADDING            
+        #draw dots
+        for dot in self.model.dots:           
             coordinate= (int(dot.center_x), int(dot.center_y))
 
             pygame.draw.circle(self.screen, dot.color,
                 coordinate, self.model.DOT_RADIUS)
 
-
         #refreshes the screen
         pygame.display.update()
 
-
 class Dot(object):
     """represents the dot"""
-    def __init__(self, center_x, center_y, radius, line_points, color, func, inc, screen_width):
+    def __init__(self, center_x, center_y, radius, color, func, screen_width):
         """initializing the circles that will be released on the beats. needs xy locations, 
         and radius"""
         # inputs for dots
         self.center_x= center_x
         self.center_y= center_y
         self.radius= radius
-        #start list of points that will be used to draw rays shape
-        #line point is already a list
-        self.line_points= line_points
         #sets the color for the dot
         self.color= color
         #starts increment for dot's horizontal progression
         self.i= self.radius 
         #the function path the dot will follow-- IS A LAMBDA FUNCTION
         self.func=func
-        #controls the speed of the horizontal progression of the dot
-        self.inc= inc
         #so the dot knows when to stop moving
         self.screen_width= screen_width
+        #controls the speed of the horizontal progression of the dot
+        self.inc= 0.2
         
     def update(self):
         """updates the increment for moving horizontally acrosee the screen"""
@@ -80,9 +62,6 @@ class Dot(object):
             #it's function path
             self.center_x= self.i
             self.center_y= self.func(self.center_x)            
-            #add current location to list for drawing
-#            self.line_points.append((self.center_x, self.center_y))
-            self.line_points= (self.line_points[0], (self.center_x, self.center_y))
             self.i+=self.inc
 
         else:  
@@ -107,17 +86,6 @@ class Color_Gradient(object):
                      .2:(6,159,157),
                      .1:(6,97,150),
                      0:(7,42,141)}
-        # color_dict = {1:(77, 138, 240), 
-        #              .9:(78, 182, 240), 
-        #              .8:(78, 226, 241), 
-        #              .7:(78, 242, 214),
-        #              .6:(79, 243, 172),
-        #              .5:(79, 244, 129),
-        #              .4:(79, 246, 86),
-        #              .3:(117, 247, 80),
-        #              .2:(162, 248, 80),
-        #              .1:(207, 249, 80),
-        #              0:(250, 248, 81)}
         
         # if round_sent in color_dict:
         #     self.color = color_dict[round_sent]
@@ -137,20 +105,8 @@ class Color_Gradient(object):
 
 class Functions(object): 
     """Holds all of the paths for the dots as lambda functions."""
-    def __init__(self, key): #key is identified by number 0-11
+    def __init__(self, key): #key is identified by number 0-11, the mirrored functions are 12-23
         self.key= key
-        # self.functions= [lambda x: (math.sin(math.pi*x/75) +1)*325,  
-        #                  lambda x: (math.sin(math.pi*x*.005)+1)*300,
-        #                  lambda x: (math.cos(math.pi*x/90) +3)*100,
-        #                  lambda x: (math.cos(math.pi*x*.0011)+1)*300,
-        #                  lambda x: (math.sin(math.pi*x/80) +1.5)*200,
-        #                  lambda x: (math.sin(2*math.sin(2*math.sin(2*math.sin(x*0.02))))+1)*300,
-        #                  lambda x: (50*math.sin(2*math.pi*x/300)+0.5*x),
-        #                  lambda x: (-0.2*x +325),
-        #                  lambda x: (50*math.sin(2*math.pi/50*x))+250*math.sin(math.pi/250*x)+325,
-        #                  lambda x: -(50*math.sin(2*math.pi*x/300)+0.5*x)+650,
-        #                  lambda x: -(math.sin(2*math.sin(2*math.sin(2*math.sin(x*0.02))))-1)*300,
-        #                  lambda x: (0.2*x +325)]
         self.functions= [ lambda x: 320*math.sin((math.pi*x)/(950)) +325,
                           lambda x: 220*math.sin((math.pi*x)/(950)) +325,
                           lambda x: 160*math.sin((math.pi*x*3)/(950)) +325,
@@ -186,9 +142,6 @@ class Functions(object):
                           ]
 
         self.func= self.functions[self.key]
-
-        #controls speed dot travels on function path
-        self.inc= 0.1
 
 #ADDING######################################################    
 class Paths(object): 
@@ -288,186 +241,159 @@ class Paths(object):
 class Model(object):
     """stores the current state for the current time in player music"""
 ###REAL
-    # def __init__(self, width, height, song):
-###TESTING    
+    def __init__(self, width, height, song):
+        """arranges the elements on the screen"""
+        #set up screen (values in if __name__= 'main')
+        self.width= width
+        self.height= height
+        #set song
+        self.song= song
+        #set constants
+        self.DOT_RADIUS= 10
+        #list of dots that will be drawn in view
+        self.dots=[]
+        #set nuetral color for when there are no lyrics (see Color_Gradient for more info)
+        self.sent= [0, 0, 0.7]
+        #to be used for drawing the paths
+        self.paths= Paths(self.width)
+###REAL
 
-
-####REAL
+# ###TESTING
 #     def __init__(self, width, height):
-
 #         """arranges the elements on the screen"""
 #         #set up screen (values in if __name__= 'main')
 #         self.width= width
 #         self.height= height
-#         #set song
-#         self.song= song
 #         #set constants
 #         self.DOT_RADIUS= 10
 #         #list of dots that will be drawn in view
 #         self.dots=[]
 #         #list that will hold lists of points to draw functions
-#         self.functions= []
+# ###OUT        # self.rays= []
 #         #starting point for all dots---- SETTING 2 BECUSE DRAWING LINES NEED 2+ POINTS
 #         self.starting_point= [(self.DOT_RADIUS/2, self.height/2), (self.DOT_RADIUS/2, self.height/2)]
-#         #set nuetral color for when there are no lyrics
-#         self.sent= [0.5, 0.5, 0.5]
-# ###     self.counter=0
-###REAL
-
-###TESTING
-    def __init__(self, width, height):
-        """arranges the elements on the screen"""
-        #set up screen (values in if __name__= 'main')
-        self.width= width
-        self.height= height
-        #set constants
-        self.DOT_RADIUS= 10
-        #list of dots that will be drawn in view
-        self.dots=[]
-        #list that will hold lists of points to draw functions
-###OUT        # self.rays= []
-        #starting point for all dots---- SETTING 2 BECUSE DRAWING LINES NEED 2+ POINTS
-        self.starting_point= [(self.DOT_RADIUS/2, self.height/2), (self.DOT_RADIUS/2, self.height/2)]
-        self.counter=0
-        #to be used for drawing the paths
-        self.paths= Paths(self.width)
-###TESTING         
+#         self.counter=0
+#         #to be used for drawing the paths
+#         self.paths= Paths(self.width)
+# ###TESTING         
 
 #TESTING CODE###############################################################
 
-    def update(self):
-        """updates the visualizer state"""    
-        #THIS WILL BE ALTERED FOR BEATS.      
-        if self.counter==1 or self.counter==1000 or self.counter==2000 or self.counter==3000:
-            #THIS WILL BE ALTERED FOR CURRENT SENTIMENT
-            if self.counter==1 or self.counter== 2000:
-                sent = [0.3, 0.7, 0.6]
-            else:
-                sent= [0.7,0.3,0.6]        
-            self.color= Color_Gradient(sent)
+#     def update(self):
+#         """updates the visualizer state"""    
+#         #THIS WILL BE ALTERED FOR BEATS.      
+#         if self.counter==1 or self.counter==1000 or self.counter==2000 or self.counter==3000:
+#             #THIS WILL BE ALTERED FOR CURRENT SENTIMENT
+#             if self.counter==1 or self.counter== 2000:
+#                 sent = [0.3, 0.7, 0.6]
+#             else:
+#                 sent= [0.7,0.3,0.6]        
+#             self.color= Color_Gradient(sent)
 
-            #THIS WILL BE ALTERED FOR CURRENT KEY
-            key=0
-            self.func= Functions(key)
-            self.func_mirror= Functions(key+12)
-
-            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func.func,
-                            self.func.inc, self.width))
-            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func_mirror.func,
-                            self.func_mirror.inc, self.width))
-
-###OUT            self.rays.append(self.starting_point)
-
-        for dot in self.dots:
-            dot.update()
-
-        self.counter+=1 
-#TESTING CODE###############################################################
-#REAL CODE##############################################################   
-
-    # def update(self, time_difference):
-    #     """updates the visualizer state"""    
-#         #initializes a dot when there is a beat
-#         #check if there are lyrics at this time, if there are, the color will
-#         #reflect them
-#         if time_difference in self.song.lyrics_sentiment.events:
-#             self.sent= self.song.lyrics_sentiment.events[time_difference]
-            
-#         self.color= Color_Gradient(self.sent)
-
-
-# ###        #THIS WILL BE ALTERED FOR BEATS.
-# ###        # if self.counter==1 or self.counter==1000 or self.counter==2000 or self.counter==3000:
-#         if time_difference in self.song.beat_channel.events:  
 #             #THIS WILL BE ALTERED FOR CURRENT KEY
-#             # if self.counter==3:
-#             self.key=self.song.chord_channel.events[time_difference]            
-#             self.func= Functions(self.key)
-#             # if self.counter==1:
-#             #     key=9
-#             # elif self.counter==2000:
-#             #     key=9   
-#             # else:
-#             #     key=9 
-#             #chooses the function path based on the current chord
+#             key=0
+#             self.func= Functions(key)
+#             self.func_mirror= Functions(key+12)
 
-# ###            #THIS WILL BE ALTERED FOR CURRENT SENTIMENT
-#             # if self.counter==1 or self.counter== 2000:
-#             #     sent = [0.3, 0.7, 0.6]
-#             # else:
-#             #     sent= [0.7,0.3,0.6]
-
-#             #create a dot that corresponds to current sentiment
 #             self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
 #                             self.starting_point, self.color.color, self.func.func,
-#                             self.func.inc))
-#             self.functions.append(self.starting_point)
-       
+#                             self.func.inc, self.width))
+#             self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
+#                             self.starting_point, self.color.color, self.func_mirror.func,
+#                             self.func_mirror.inc, self.width))
+
+# ###OUT            self.rays.append(self.starting_point)
 
 #         for dot in self.dots:
 #             dot.update()
 
-# ###        # self.counter+=1    
-#REAL CODE##############################################################
-
-#REAL CODE##############################################################
-# if __name__=='__main__':
-#     """When the code is ran, the visualizer sets up as specified"""
-#     pygame.init()
-#     #initialize the song, and run the analysis
-#     pygame.mixer.music.load('Bad_Reputation.mp3')
-#     song= audio.Song('Bad_Reputation.mp3', 'Bad Reputation')
-#     song.beat_analysis()
-#     song.lyric_sentiment()
-#     song.chord_analysis()
-
-#     #select screen size
-#     size= (950, 650)
-    
-#     model= Model(size[0], size[1], song)
-#     view= View(model, size)
-
-#     #start playing the music, start the clock
-#     pygame.mixer.music.play(0)
-#     start= datetime.datetime.now()
-#     pygame.mixer.music.set_volume(0.5)
-#     clock= pygame.time.Clock()
-#     clock.tick(10)
-
-#     running= True
-#     #checks if the user closes the window   
-#     while running:
-#         for event in pygame.event.get():
-#             if event.type== QUIT:
-#                 running= False
-#         #determine how long it's been since the song started
-#         time_difference=datetime.datetime.now()-start
-#         rounded_time=round(time_difference.total_seconds(),1)
-#         time_difference=datetime.timedelta(0,rounded_time)        
-#         #if the window is open, do these things
-#         model.update(time_difference)
-#         view.draw()
-#         time.sleep(.001)
-#REAL CODE##############################################################
-
+#         self.counter+=1 
 #TESTING CODE###############################################################
+#REAL CODE##############################################################   
+
+    def update(self, time_difference):
+        """updates the visualizer state"""    
+        #initializes a dot when there is a beat
+
+        #check if there are lyrics at this time, if there are, the color will
+        #reflect them
+        if time_difference in self.song.lyrics_sentiment.events:
+            self.sent= self.song.lyrics_sentiment.events[time_difference]  
+        self.color= Color_Gradient(self.sent)
+
+        #release two dots (on mirrored functions) on each beat
+        if time_difference in self.song.beat_channel.events: 
+
+            self.key=self.song.chord_channel.events[time_difference]            
+            self.func= Functions(self.key)
+            self.func_mirror= Functions(self.key+12)
+
+            #create a dot that corresponds to current sentiment
+            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
+                            self.color.color, self.func.func, self.width))
+            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
+                            self.color.color, self.func_mirror.func, self.width))
+       
+        for dot in self.dots:
+            dot.update()
+#REAL CODE##############################################################
+
+#REAL CODE##############################################################
 if __name__=='__main__':
     """When the code is ran, the visualizer sets up as specified"""
     pygame.init()
+    #initialize the song, and run the analysis
+    pygame.mixer.music.load('Bad_Reputation.mp3')
+    song= audio.Song('Bad_Reputation.mp3', 'Bad Reputation')
+    song.beat_analysis()
+    song.lyric_sentiment()
+    song.chord_analysis()
+
     #select screen size
     size= (950, 650)
-
-    model= Model(size[0], size[1])
+    
+    model= Model(size[0], size[1], song)
     view= View(model, size)
+
+    #start playing the music, start the clock
+    pygame.mixer.music.play(0)
+    start= datetime.datetime.now()
+    pygame.mixer.music.set_volume(0.5)
+    clock= pygame.time.Clock()
+    clock.tick(10)
+
     running= True
     #checks if the user closes the window   
     while running:
         for event in pygame.event.get():
             if event.type== QUIT:
                 running= False
+        #determine how long it's been since the song started
+        time_difference=datetime.datetime.now()-start
+        rounded_time=round(time_difference.total_seconds(),1)
+        time_difference=datetime.timedelta(0,rounded_time)        
         #if the window is open, do these things
-        model.update()
+        model.update(time_difference)
         view.draw()
         time.sleep(.001)
+#REAL CODE##############################################################
+
+# #TESTING CODE###############################################################
+# if __name__=='__main__':
+#     """When the code is ran, the visualizer sets up as specified"""
+#     pygame.init()
+#     #select screen size
+#     size= (950, 650)
+
+#     model= Model(size[0], size[1])
+#     view= View(model, size)
+#     running= True
+#     #checks if the user closes the window   
+#     while running:
+#         for event in pygame.event.get():
+#             if event.type== QUIT:
+#                 running= False
+#         #if the window is open, do these things
+#         model.update()
+#         view.draw()
+#         time.sleep(.001)
