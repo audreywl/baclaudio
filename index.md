@@ -5,5 +5,5 @@ filename: index
 --- 
 # BACLaudio
 
-# INSERT SCREEN SHOT
+![The Best Years of Our Lives by the Baha Men](https://raw.githubusercontent.com/audreywl/baclaudio/master/Baha_Men.png "BACLaudio visualizing Baha Men")
 
