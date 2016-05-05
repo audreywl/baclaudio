@@ -1,6 +1,9 @@
 # BACLaudio
 BACLaudio is an auditory and visual experience generator. Taking in a variety of songs (we've chosen to theme this iteration on the Shrek soundtrack), BACLaudio generates a visualization of the lyrical and instrumental sentiment. In the form of a series of dots and functions, the continuously running patterns depict the instrumental sentiment based on chords and beat. Meanwhile, the color of the dots is determined by the sentiment of the song lyrics as determined by language processing. 
 ### Getting Started
+
+Of course, the first thing to do to get started running libROSA on your own is the clone the BACLaudio project at https://github.com/audreywl/baclaudio
+
 The main external library that we are using to do analysis is called libROSA. libROSA has a ton of dependencies, which can be obtained by executing
 ```
 $ sudo apt-get install python-numpy python-matplotlib python-scipy libpng12-dev libfreetype6-dev libav-tools libsamplerate0-dev
@@ -11,6 +14,12 @@ $ sudo pip install scikits.samplerate
 
 $ sudo pip install librosa
 ```
+To start the visualizer, simply run wrapper.py. 
+```
+$ python wrapper.py
+```
+It will prompt the user with what song they want to visualize. If you haven't downloaded a lyric and audio file for yourself, try Hallelujah by Rufus Wainwright, Bad Reputation by Joan Jett, or The Best Years Of Our Lives by Baha Men, which come with the repo.
+
 It is highly likely that you will get the following error every time you run the code:
 ```
 	/usr/local/lib/python2.7/dist-packages/matplotlib/font_manager.py:273: 
