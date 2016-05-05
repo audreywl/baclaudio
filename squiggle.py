@@ -23,22 +23,11 @@ class View(object):
         self.screen.fill(pygame.Color('white'))
 
 ###ADDING
-        pygame.draw.lines(self.screen, pygame.Color('gray'), False, self.model.paths.path0)
-        pygame.draw.lines(self.screen, pygame.Color('gray'), False, self.model.paths.path1)
-        pygame.draw.lines(self.screen, pygame.Color('gray'), False, self.model.paths.path2)
-        pygame.draw.lines(self.screen, pygame.Color('gray'), False, self.model.paths.path3)
-        pygame.draw.lines(self.screen, pygame.Color('gray'), False, self.model.paths.path4)
-        pygame.draw.lines(self.screen, pygame.Color('gray'), False, self.model.paths.path5)
-        pygame.draw.lines(self.screen, pygame.Color('gray'), False, self.model.paths.path6)
-        pygame.draw.lines(self.screen, pygame.Color('gray'), False, self.model.paths.path7)
-        pygame.draw.lines(self.screen, pygame.Color('gray'), False, self.model.paths.path8)
-        pygame.draw.lines(self.screen, pygame.Color('gray'), False, self.model.paths.path9)
-        pygame.draw.lines(self.screen, pygame.Color('gray'), False, self.model.paths.path10)
-        pygame.draw.lines(self.screen, pygame.Color('gray'), False, self.model.paths.path11)
-
+        for path in self.model.paths.paths:
+            pygame.draw.lines(self.screen, pygame.Color('gray'), False, path)
 ###ADDING        
         
-#DEBUGGING THE FUNCTION LINES. FIRST IS CONSICE, SECOND IS FOR UNDERSTANDING THE PROBLEM.
+#DEBUGGING THE FUNCTION LINES. FIRST IS CONCISE, SECOND IS FOR UNDERSTANDING THE PROBLEM.
         #what to draw    
         # print len(self.model.functions)
         # for function in self.model.functions:
@@ -46,10 +35,16 @@ class View(object):
         #         False, function, 3)    
 
         for dot in self.model.dots:
+
+###ADDING
+            pygame.draw.line(self.screen, dot.color, dot.line_points[0], 
+                            dot.line_points[1])
+###ADDING            
             coordinate= (int(dot.center_x), int(dot.center_y))
 
             pygame.draw.circle(self.screen, dot.color,
                 coordinate, self.model.DOT_RADIUS)
+
 
         #refreshes the screen
         pygame.display.update()
@@ -57,16 +52,16 @@ class View(object):
 
 class Dot(object):
     """represents the dot"""
-    def __init__(self, center_x, center_y, radius, line_point, color, func, inc, screen_width):
+    def __init__(self, center_x, center_y, radius, line_points, color, func, inc, screen_width):
         """initializing the circles that will be released on the beats. needs xy locations, 
         and radius"""
         # inputs for dots
         self.center_x= center_x
         self.center_y= center_y
         self.radius= radius
-        #start list of points that will be used to draw function shape
+        #start list of points that will be used to draw rays shape
         #line point is already a list
-        self.line_points= line_point
+        self.line_points= line_points
         #sets the color for the dot
         self.color= color
         #starts increment for dot's horizontal progression
@@ -86,7 +81,8 @@ class Dot(object):
             self.center_x= self.i
             self.center_y= self.func(self.center_x)            
             #add current location to list for drawing
-            self.line_points.append((self.center_x, self.center_y))
+#            self.line_points.append((self.center_x, self.center_y))
+            self.line_points= (self.line_points[0], (self.center_x, self.center_y))
             self.i+=self.inc
 
         else:  
@@ -155,47 +151,44 @@ class Functions(object):
         #                  lambda x: -(50*math.sin(2*math.pi*x/300)+0.5*x)+650,
         #                  lambda x: -(math.sin(2*math.sin(2*math.sin(2*math.sin(x*0.02))))-1)*300,
         #                  lambda x: (0.2*x +325)]
-        self.functions= [lambda x: 320*math.sin((math.pi*x)/(950)) +325,
+        self.functions= [ lambda x: 320*math.sin((math.pi*x)/(950)) +325,
+                          lambda x: 220*math.sin((math.pi*x)/(950)) +325,
                           lambda x: 160*math.sin((math.pi*x*3)/(950)) +325,
                           lambda x:  80*math.sin((math.pi*x*9)/(950)) +325,
-                          lambda x:  40*math.sin((math.pi*x*3)/(950)) -(300*x)/950 +325,
-                          lambda x:  40*math.sin((math.pi*x*3)/(950)) -(200*x)/950 +325,
-                          lambda x:  -(100*x)/950 +325,
+
+                          lambda x:  40*math.sin((math.pi*x*3)/(950)) -(235*x)/950 +325,
+                          lambda x:  40*math.sin((math.pi*x*3)/(950)) -(155*x)/950 +325,
+                          lambda x:  40*math.sin((math.pi*x*3)/(950)) -(85*x)/950 +325,
+
+                          lambda x:  -(275*x)/950 +325,
+                          lambda x:  -(195*x)/950 +325,
+                          lambda x:  -(115*x)/950 +325,
+                          ###
+                          lambda x: x+325,
+                          lambda x: x+325,
+                          ###
                           lambda x: -(320*math.sin((math.pi*x)/(950))) +325,
+                          lambda x: -(220*math.sin((math.pi*x)/(950))) +325,
                           lambda x: -(160*math.sin((math.pi*x*3)/(950))) +325,
                           lambda x:  -(80*math.sin((math.pi*x*9)/(950))) +325,
-                          lambda x:  -(40*math.sin((math.pi*x*3)/(950)) -(300*x)/950) +325,
-                          lambda x:  -(40*math.sin((math.pi*x*3)/(950)) -(200*x)/950) +325,
-                          lambda x:  (100*x)/950 +325
+
+                          lambda x:  -(40*math.sin((math.pi*x*3)/(950)) -(235*x)/950) +325,
+                          lambda x:  -(40*math.sin((math.pi*x*3)/(950)) -(155*x)/950) +325,
+                          lambda x:  -(40*math.sin((math.pi*x*3)/(950)) -(85*x)/950) +325,
+
+                          lambda x:  (275*x)/950 +325,
+                          lambda x:  (195*x)/950 +325,
+                          lambda x:  (115*x)/950 +325,
+                          ### 
+                          lambda x: -x+325,
+                          lambda x: -x+325
+                          ###                       
                           ]
+
         self.func= self.functions[self.key]
 
-        #increments map with functions, controls speeds
-        # self.increment= [0.08,
-        #                 0.1, 
-        #                 0.4, 
-        #                 0.2, 
-        #                 0.1, 
-        #                 0.08, 
-        #                 0.2, 
-        #                 0.2,
-        #                 0.08,
-        #                 0.2,
-        #                 0.08,
-        #                 0.2 ]
-        self.increment= [0.1,
-                        0.1,
-                        0.1,
-                        0.1,
-                        0.1,
-                        0.1,
-                        0.1,
-                        0.1,
-                        0.1,
-                        0.1,
-                        0.1,
-                        0.1]
-        self.inc= self.increment[self.key]
+        #controls speed dot travels on function path
+        self.inc= 0.1
 
 #ADDING######################################################    
 class Paths(object): 
@@ -217,19 +210,49 @@ class Paths(object):
         self.path9= []
         self.path10=[]
         self.path11=[]
+        self.path12= []
+        self.path13= []
+        self.path14= []
+        self.path15= []
+        self.path16= []
+        self.path17= []
+        self.path18= []
+        self.path19= []
+        self.path20= []
+        self.path21= []
+        self.path22= []
+        self.path23= []     
 
-        self.zero=   Functions(0)
-        self.one=    Functions(1)
-        self.two=    Functions(2)
-        self.three=  Functions(3)
-        self.four=   Functions(4)
-        self.five=   Functions(5)
-        self.six=    Functions(6)
-        self.seven=  Functions(7)
-        self.eight=  Functions(8)
-        self.nine=   Functions(9)
-        self.ten=    Functions(10)
-        self.eleven= Functions(11)
+        #list of paths to be drawn
+        self.paths= [self.path0, self.path1, self.path2, self.path3, self.path4, self.path5, 
+                    self.path6, self.path7, self.path8, self.path9, self.path10, self.path11,
+                    self.path12, self.path13, self.path14, self.path15, self.path16, self.path17, 
+                    self.path18, self.path19, self.path20, self.path21, self.path22, self.path23 ]
+
+        self.zero=       Functions(0)
+        self.one=        Functions(1)
+        self.two=        Functions(2)
+        self.three=      Functions(3)
+        self.four=       Functions(4)
+        self.five=       Functions(5)
+        self.six=        Functions(6)
+        self.seven=      Functions(7)
+        self.eight=      Functions(8)
+        self.nine=       Functions(9)
+        self.ten=        Functions(10)
+        self.eleven=     Functions(11)
+        self.twelve=     Functions(12)
+        self.thirteen=   Functions(13)
+        self.fourteen=   Functions(14)
+        self.fifteen=    Functions(15)
+        self.sixteen=    Functions(16)
+        self.seventeen=  Functions(17)
+        self.eighteen=   Functions(18)
+        self.nineteen=   Functions(19) 
+        self.twenty=     Functions(20)
+        self.twentyone=  Functions(21)
+        self.twentytwo=  Functions(22)
+        self.twentythree=Functions(23)     
 
         while self.i <= self.screen_width:
             self.path0.append((self.i, self.zero.func(self.i)))
@@ -244,6 +267,19 @@ class Paths(object):
             self.path9.append((self.i, self.nine.func(self.i)))
             self.path10.append((self.i, self.ten.func(self.i)))
             self.path11.append((self.i, self.eleven.func(self.i)))
+            self.path12.append((self.i, self.twelve.func(self.i)))
+            self.path13.append((self.i, self.thirteen.func(self.i)))
+            self.path14.append((self.i, self.fourteen.func(self.i)))
+            self.path15.append((self.i, self.fifteen.func(self.i)))
+            self.path16.append((self.i, self.sixteen.func(self.i)))
+            self.path17.append((self.i, self.seventeen.func(self.i)))
+            self.path18.append((self.i, self.eighteen.func(self.i)))
+            self.path19.append((self.i, self.nineteen.func(self.i)))
+            self.path20.append((self.i, self.twenty.func(self.i)))
+            self.path21.append((self.i, self.twentyone.func(self.i)))
+            self.path22.append((self.i, self.twentytwo.func(self.i)))
+            self.path23.append((self.i, self.twentythree.func(self.i)))
+
             self.i+=10
 
 #ADDING######################################################        
@@ -289,7 +325,7 @@ class Model(object):
         #list of dots that will be drawn in view
         self.dots=[]
         #list that will hold lists of points to draw functions
-        self.functions= []
+###OUT        # self.rays= []
         #starting point for all dots---- SETTING 2 BECUSE DRAWING LINES NEED 2+ POINTS
         self.starting_point= [(self.DOT_RADIUS/2, self.height/2), (self.DOT_RADIUS/2, self.height/2)]
         self.counter=0
@@ -313,99 +349,16 @@ class Model(object):
             #THIS WILL BE ALTERED FOR CURRENT KEY
             key=0
             self.func= Functions(key)
+            self.func_mirror= Functions(key+12)
 
             self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
                             self.starting_point, self.color.color, self.func.func,
                             self.func.inc, self.width))
-            self.functions.append(self.starting_point)
-
-            key=1
-            self.func= Functions(key)
-
             self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func.func,
-                            self.func.inc, self.width))
-            self.functions.append(self.starting_point)
+                            self.starting_point, self.color.color, self.func_mirror.func,
+                            self.func_mirror.inc, self.width))
 
-            key=2
-            self.func= Functions(key)
-
-            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func.func,
-                            self.func.inc, self.width))
-            self.functions.append(self.starting_point)
-
-            key=3
-            self.func= Functions(key)
-
-            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func.func,
-                            self.func.inc, self.width))
-            self.functions.append(self.starting_point)
-
-            key=4
-            self.func= Functions(key)
-
-            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func.func,
-                            self.func.inc, self.width))
-            self.functions.append(self.starting_point)
-
-            key=5
-            self.func= Functions(key)
-
-            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func.func,
-                            self.func.inc, self.width))
-            self.functions.append(self.starting_point)
-
-            key=6
-            self.func= Functions(key)
-
-            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func.func,
-                            self.func.inc, self.width))
-            self.functions.append(self.starting_point)
-
-            key=7
-            self.func= Functions(key)
-
-            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func.func,
-                            self.func.inc, self.width))
-            self.functions.append(self.starting_point)
-
-            key=8
-            self.func= Functions(key)
-
-            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func.func,
-                            self.func.inc, self.width))
-            self.functions.append(self.starting_point)
-
-            key=9
-            self.func= Functions(key)
-
-            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func.func,
-                            self.func.inc, self.width))
-            self.functions.append(self.starting_point)
-
-            key=10
-            self.func= Functions(key)
-
-            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func.func,
-                            self.func.inc, self.width))
-            self.functions.append(self.starting_point)
-
-            key=11
-            self.func= Functions(key)
-
-            self.dots.append(Dot(self.DOT_RADIUS/2, self.height/2, self.DOT_RADIUS, 
-                            self.starting_point, self.color.color, self.func.func,
-                            self.func.inc, self.width))
-            self.functions.append(self.starting_point)
+###OUT            self.rays.append(self.starting_point)
 
         for dot in self.dots:
             dot.update()
