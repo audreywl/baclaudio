@@ -73,12 +73,9 @@ class Song(object):
 		for second in self.beat_times:
 			#rounds time to 1/10 of a second
 			second = round(second, 1)
-			next_second = second + .1
 			time=datetime.timedelta(0,second)
-			next_time= datetime.timedelta(0, next_second)
 			#saves beat in channel
 			self.beat_channel.update(time, True)
-			self.beat_channel.update(next_time, False)
 
 	# def chord_analysis(self):
 	#     """runs the analysis on the song to determine when the chords are major and minor"""
@@ -191,7 +188,7 @@ class Song(object):
 				post_start_song = song[i+1:]
 				break
 
-		print song, time_start
+		# print song, time_start
 		#call lyric_line function (recursive) to obtain needed output format of song text
 		self.lyric_lines(song, time_start)
 
@@ -222,7 +219,9 @@ class Song(object):
 				# create a sentiment entry for the given time (time corresponds to line)
 				self.lyrics_sentiment.update(a_time, probability_values)
 			except urllib2.HTTPError:
-				print "error!"
+				# this error will occur if empty text is sent to the api, which is a
+				# common occurance of the first line due to filtering
+				print "API error! (It's probably OK, check documentation for more info)"
 
 if __name__ == '__main__':
 	#loads the song and runs analysis
