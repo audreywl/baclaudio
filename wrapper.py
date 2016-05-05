@@ -16,7 +16,7 @@ import os
 
 def run_analyses(song):
 	"""processes the song - if there is chunk implementation, it would be here"""
-	song.get_album_art()
+	#song.get_album_art()
 	song.beat_analysis()
 	song.chord_analysis()
 	song.lyric_sentiment()
@@ -131,6 +131,7 @@ if __name__ == '__main__':
 		new_path = os.getcwd()
 		path = find_directory()
 		[new_song_path, new_lyric_path] = move_files(path, new_path, folder_name, track)
+	
 	#check if the song has been pickled
 	pickle_name = folder_name+'.pkl'
 	if not os.path.exists(pickle_name):
@@ -148,8 +149,6 @@ if __name__ == '__main__':
 
 	pygame.init()
 	size= (950, 650)
-	# pprint(song.lyrics_sentiment.events)
-	# print song.lyrics.events
 	model= squiggle.Model(size[0], size[1], song)
 	view= squiggle.View(model, size)
 	pygame.mixer.music.load(new_song_path)
@@ -159,7 +158,7 @@ if __name__ == '__main__':
 	pygame.mixer.music.set_volume(0.5)
 	clock= pygame.time.Clock()
 	clock.tick(10)
-	
+
 	running= True
 	#checks if the user closes the window   
 	while running:

@@ -140,7 +140,8 @@ class Song(object):
 					continue
 				minutes = float(time[1:3]) #non inclusive of last index
 				seconds = float(time[4:9])
-				line_time = datetime.timedelta(00,seconds, 00, 00, 00, minutes)
+				seconds = round(seconds, 1)
+				line_time = datetime.timedelta(seconds=seconds, minutes=minutes)
 				self.lyrics.update(line_time,line)
 
 	def lyric_sentiment(self):
