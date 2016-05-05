@@ -41,6 +41,21 @@ Using our wrapper, users are able to add songs to BACLaudio by finding .mp3 (mus
 
 
 ### Attribution
+
+Time   -   Reading, checking timestamps, timing
+
+Numpy   -  Math
+
+Librosa  - Obtaining beats, music chord changes
+
+Datetime - Timestamping events for channel classes
+
+Pygame.mixer - Use of music with Pygame
+
+Urllib2, json   -   Interaction with Natural Language 
+   		    Toolkit (NLTK) text sentiment API
+
+
 #### Authors:
 Becca Patterson......rebeccapatterson
 
