@@ -3,7 +3,7 @@ title: How To Use
 layout: template
 filename: howtouse
 --- 
-### Getting Started
+# Getting Started
 The main external library that we are using to do analysis is called libROSA. libROSA has a ton of dependencies, which can be obtained by executing
 ```
 $ sudo apt-get install python-numpy python-matplotlib python-scipy libpng12-dev libfreetype6-dev libav-tools libsamplerate0-dev
