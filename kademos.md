@@ -1,7 +1,7 @@
 ---
 title: Demos
 layout: template
-filename: demos
+filename: kademos
 --- 
 # The Visualization 
 
