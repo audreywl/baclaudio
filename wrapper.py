@@ -11,7 +11,7 @@ from pprint import pprint
 import Image
 import audio
 import pickle
-#import squiggle
+import squiggle
 import os
 
 def run_analyses(song):
@@ -40,9 +40,9 @@ def find_directory():
 	elif choice in no:
 		path = find_new_path()
 	else:
-   		print "Please respond with 'yes' or 'no'"
-   		find_directory()
-   	return path
+		print "Please respond with 'yes' or 'no'"
+		find_directory()
+	return path
 
 def file_choice(display_files, type_of_file):
 	"""Prompts the user to choose a file from a list. If they choose none of the above, it returns None."""
@@ -117,9 +117,9 @@ if __name__ == '__main__':
 	if os.path.exists(folder_name) and os.path.isdir(folder_name):
 		os.chdir(folder_name)
 		path = os.getcwd()
-		song_path = path + '/' + folder_name + '.mp3'
-		lyric_path = path + '/' + folder_name + '.txt'
-		if not os.path.exists(song_path) or os.path.exists(lyric_path):
+		new_song_path = path + '/' + folder_name + '.mp3'
+		new_lyric_path = path + '/' + folder_name + '.txt'
+		if not os.path.exists(new_song_path) or not os.path.exists(new_lyric_path):
 			print "I'm having trouble finding the required files."
 			new_path = os.getcwd()
 			path = find_directory()
@@ -145,17 +145,31 @@ if __name__ == '__main__':
 		song = pickle.load(pkl_file)
 		pkl_file.close()
 	#start pygame
+
 	pygame.init()
 	size= (950, 650)
-	model= squiggle.Model(song, size[0], size[1])
+	pprint(song.lyrics_sentiment.events)
+	model= squiggle.Model(size[0], size[1], song)
 	view= squiggle.View(model, size)
+	pygame.mixer.music.load(new_song_path)
+	#start playing the music, start the clock
+	pygame.mixer.music.play(0)
+	start= datetime.datetime.now()
+	pygame.mixer.music.set_volume(0.5)
+	clock= pygame.time.Clock()
+	clock.tick(10)
+	
 	running= True
 	#checks if the user closes the window   
 	while running:
-	    for event in pygame.event.get():
-	        if event.type== QUIT:
-	            running= False
-	    #if the window is open, do these things
-	    model.update()
-	    view.draw()
-	    time.sleep(.001)
+		for event in pygame.event.get():
+			if event.type== QUIT:
+				running= False
+		#determine how long it's been since the song started
+		time_difference=datetime.datetime.now()-start
+		rounded_time=round(time_difference.total_seconds(),1)
+		time_difference=datetime.timedelta(0,rounded_time)        
+		#if the window is open, do these things
+		model.update(time_difference)
+		view.draw()
+		time.sleep(.001)
