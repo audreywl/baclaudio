@@ -226,15 +226,16 @@ class Song(object):
 
 if __name__ == '__main__':
 	#loads the song and runs analysis
-	bad_rep=Song('Bad_Reputation.mp3','Bad Reputation', 'Joan Jett')
+	bad_rep=Song('All_Star_Smash_Mouth.mp3','All_Star_Smash_Mouth.txt', 'All Star', 'Smash Mouth')
 	bad_rep.get_album_art()
 	bad_rep.beat_analysis()
 	bad_rep.chord_analysis()
 	bad_rep.lyric_sentiment()
+	pprint(bad_rep.lyrics.events)
 	#starts pygame
 	pygame.init()
 	pygame.display.set_mode((200,100))
-	pygame.mixer.music.load('Bad_Reputation.mp3')
+	pygame.mixer.music.load('All_Star_Smash_Mouth.mp3')
 	#starts playing music and starts the clock
 	pygame.mixer.music.play(0)
 	start=datetime.datetime.now()

@@ -148,7 +148,8 @@ if __name__ == '__main__':
 
 	pygame.init()
 	size= (950, 650)
-	pprint(song.lyrics_sentiment.events)
+	# pprint(song.lyrics_sentiment.events)
+	# print song.lyrics.events
 	model= squiggle.Model(size[0], size[1], song)
 	view= squiggle.View(model, size)
 	pygame.mixer.music.load(new_song_path)

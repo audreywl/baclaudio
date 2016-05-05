@@ -71,8 +71,8 @@ class Dot(object):
 
 class Color_Gradient(object):
     def __init__(self,sent):
-        round_sent = round(sent[0], 1)
-        percentPos = sent[0]
+        #round_sent = round(sent[0], 1)
+        percentPos = round(sent[0], 1)
         percentNeg = sent[1]
         percentNeu = sent[2]
         color_dict = {1:(231,3,3), 
