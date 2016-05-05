@@ -8,6 +8,7 @@ $ sudo apt-get install python-numpy python-matplotlib python-scipy libpng12-dev 
 at the command line. Then install libROSA and one more dependency with
 ```
 $ sudo pip install scikits.samplerate
+ =
 $ sudo pip install librosa
 ```
 It is highly likely that you will get the following error every time you run the code:
