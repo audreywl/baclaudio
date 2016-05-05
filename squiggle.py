@@ -78,8 +78,7 @@ class Color_Gradient(object):
     """sets a color."""
     def __init__(self,sent):
         """sets a color. needs a lyric sentiment passed in."""
-        round_sent = round(sent[0], 1)
-        percentPos = sent[0]
+        percentPos = round(sent[0], 1)
         percentNeg = sent[1]
         percentNeu = sent[2]
         color_dict = {1:(231,3,3), 
