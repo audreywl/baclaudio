@@ -45,13 +45,9 @@ class Song(object):
         for second in self.beat_times:
             #rounds time to 1/10 of a second
             second = round(second, 1)
-            next_second = second + .1
             time=datetime.timedelta(0,second)
-            next_time= datetime.timedelta(0, next_second)
             #saves beat in channel
             self.beat_channel.update(time, True)
-            self.beat_channel.update(next_time, False)
-
 
 #set up the visualizer view
 class View(object):
@@ -97,7 +93,6 @@ class View(object):
      #      self.model.update_color(positive, negative, neutral)
         # else:
         #   print "no color change"
-
         self.clock.tick(10)
 
 
@@ -148,15 +143,16 @@ class Model(object):
     # def update_color(self,pos,neg,neutral):
     #   """updates the rgb values based off of the lyric sentiment"""
     #   self.color= (75*pos, 1*neg, 130*nuetral)
-
     def update_expand(self):
         """updates model state"""
         #initializing shape radii
         #need to set an expansion variable for easier flexibility, use current+=expansion
+
         self.r_cirle+= self.beat_expansion
         self.r_square+= self.beat_expansion
         self.r_rhombus+= self.beat_expansion
         self.r_octogon+= self.beat_expansion
+
 
     def update_contract(self):
         #resets radii
@@ -165,6 +161,7 @@ class Model(object):
         self.r_square-= self.beat_expansion
         self.r_rhombus-= self.beat_expansion
         self.r_octogon-= self.beat_expansion
+
 
 if __name__=='__main__':
     """When the code is ran, the visualizer sets up as specified"""
