@@ -1,9 +1,9 @@
 ---
-title: What's Next?
+title: What else?
 layout: template
 filename: whatsnext
 --- 
-# What's next?
+# What more is there?
 
 ## Pitfalls 
 Currently the user must wait several seconds for the program to complete analysis of the song and play, which creates a less than ideal audio and visual experience. 
