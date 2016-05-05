@@ -3,4 +3,4 @@ title: About Our Code
 layout: template
 filename: aboutourcode
 --- 
-# Code Architecture
+# Code Architecture and UML
