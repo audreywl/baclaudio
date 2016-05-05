@@ -1,7 +1,7 @@
 ---
 title: About Our Code
 layout: template
-filename: aboutourcode
+filename: jaboutourcode
 --- 
 # Code Architecture
 Our code is comprised of a series of classes.  Our uppermost class is View, where all the parts of our visualization are drawn in a pygame window.  View knows what to draw from Model, where all of the dots are initialized. 
